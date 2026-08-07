@@ -1,0 +1,30 @@
+export const colors = {
+  primary: {
+    light: '#F5F0EB',
+    main: '#C9A96E',
+    dark: '#8B6914',
+  },
+  white: '#FFFFFF',
+  background: '#FFFFFF',
+  surface: '#FAFAF8',
+  border: '#E8E3DC',
+  text: {
+    primary: '#5C3D1E',
+    secondary: '#8B6F47',
+    light: '#B8A789',
+    disabled: '#D4C4B3',
+  },
+  status: {
+    pending: '#FFB800',
+    waiting: '#FF9500',
+    inProgress: '#0070F3',
+    completed: '#00B341',
+    cancelled: '#F31260',
+  },
+  success: '#00B341',
+  warning: '#FFB800',
+  error: '#F31260',
+  info: '#0070F3',
+  revenue: '#00B341',
+  expense: '#F31260',
+};
