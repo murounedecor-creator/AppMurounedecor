@@ -5,7 +5,7 @@
     "browser-testing": true,
     "seo-geo": false,
     "skill-creator": true,
-    "web-design-guidelines": false,
+    "web-design-guidelines": true,
     "writing-guidelines": false
   }
 }
