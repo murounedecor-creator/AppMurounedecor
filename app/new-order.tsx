@@ -838,15 +838,15 @@ export default function NewOrderScreen() {
     serviceSubtotal + productSubtotal + chargeableExpenses + freightValue - discountAmount;
 
   // ============== SAVE ORDER ==============
-  const handleSaveOrder = async () => {
+  const handleSaveOrder = async (silent: boolean = false): Promise<string | null> => {
     if (!selectedCustomer) {
       Alert.alert('Erro', 'Selecione um cliente');
-      return;
+      return null;
     }
 
     if (furnitures.length === 0) {
       Alert.alert('Erro', 'Adicione pelo menos um móvel');
-      return;
+      return null;
     }
 
     setSaving(true);
@@ -1021,12 +1021,16 @@ export default function NewOrderScreen() {
         }
       }
 
-      Alert.alert('Sucesso', `Pedido ${orderNumber} ${editMode ? 'atualizado' : 'criado'} com sucesso!`, [
-        { text: 'OK', onPress: () => router.back() },
-      ]);
+      if (!silent) {
+        Alert.alert('Sucesso', `Pedido ${orderNumber} ${editMode ? 'atualizado' : 'criado'} com sucesso!`, [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
+      }
+      return orderId;
     } catch (error: any) {
       console.error('Error saving order:', error);
       Alert.alert('Erro', error?.message || 'Falha ao salvar pedido');
+      return null;
     } finally {
       setSaving(false);
     }
@@ -1035,6 +1039,10 @@ export default function NewOrderScreen() {
   const handleGeneratePDF = async () => {
     if (!selectedCustomer) {
       Alert.alert('Atenção', 'Selecione um cliente antes de gerar o PDF');
+      return;
+    }
+    const savedOrderId = await handleSaveOrder(true);
+    if (!savedOrderId) {
       return;
     }
     try {
@@ -1195,6 +1203,10 @@ export default function NewOrderScreen() {
           dialogTitle: `Compartilhar ${nomeArquivo}`,
           UTI: 'com.adobe.pdf',
         });
+
+        Alert.alert('Sucesso', 'PDF enviado e pedido salvo com sucesso!', [
+          { text: 'OK', onPress: () => router.back() },
+        ]);
       }
     } catch (error: any) {
       console.error('Erro ao gerar PDF:', error);
@@ -1687,7 +1699,7 @@ export default function NewOrderScreen() {
         <View style={styles.actionButtons}>
           <TouchableOpacity
             style={[styles.button, styles.buttonSave]}
-            onPress={handleSaveOrder}
+            onPress={() => handleSaveOrder()}
             disabled={saving}>
             <Ionicons name="save" size={20} color={colors.white} />
             <Text style={styles.buttonText}>{saving ? 'Salvando...' : 'Salvar Pedido'}</Text>
