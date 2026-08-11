@@ -541,11 +541,15 @@ export default function NewOrderScreen() {
       return;
     }
 
+    const finalQuantityPieces = currentFurniture.quantityPieces && currentFurniture.quantityPieces > 0
+      ? currentFurniture.quantityPieces
+      : 1;
+
     if (editingFurnitureId) {
       setFurnitures(prev =>
         prev.map(f =>
           f.id === editingFurnitureId
-            ? { ...currentFurniture as OrderFurniture }
+            ? { ...currentFurniture, quantityPieces: finalQuantityPieces } as OrderFurniture
             : f
         )
       );
@@ -554,6 +558,7 @@ export default function NewOrderScreen() {
         ...prev,
         {
           ...currentFurniture,
+          quantityPieces: finalQuantityPieces,
           id: Date.now().toString(),
         } as OrderFurniture,
       ]);
@@ -1965,11 +1970,11 @@ export default function NewOrderScreen() {
                 style={styles.input}
                 placeholder="Quantidade"
                 placeholderTextColor={colors.text.disabled}
-                value={currentFurniture.quantityPieces?.toString()}
+                value={currentFurniture.quantityPieces ? currentFurniture.quantityPieces.toString() : ''}
                 onChangeText={text =>
                   setCurrentFurniture(prev => ({
                     ...prev,
-                    quantityPieces: parseInt(text) || 1,
+                    quantityPieces: text === '' ? 0 : (parseInt(text) || 0),
                   }))
                 }
                 keyboardType="number-pad"
