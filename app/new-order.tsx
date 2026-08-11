@@ -1229,7 +1229,11 @@ export default function NewOrderScreen() {
 
   return (
     <View style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <KeyboardAwareScrollView
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        enableOnAndroid
+        extraScrollHeight={20}>
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <TouchableOpacity onPress={() => router.back()}>
@@ -1455,13 +1459,13 @@ export default function NewOrderScreen() {
           {services.map(service => (
             <View key={service.id} style={styles.itemCard}>
               <View style={styles.itemCardHeader}>
-                <View>
+                <View style={{ flex: 1, marginRight: 8 }}>
                   <Text style={styles.itemCardTitle}>{service.name}</Text>
                   <Text style={styles.itemCardDetail}>
                     {parseQuantidade(service.quantity)}x {service.unit || 'Unitário'} - R$ {(parseNum(service.value) * parseQuantidade(service.quantity)).toFixed(2).replace('.', ',')}
                   </Text>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                   <TouchableOpacity onPress={() => handleEditService(service)} style={{ padding: 4 }}>
                     <Ionicons name="pencil-outline" size={18} color="#C9A96E" />
                   </TouchableOpacity>
@@ -1714,7 +1718,7 @@ export default function NewOrderScreen() {
             <Text style={styles.buttonText}>Enviar PDF</Text>
           </TouchableOpacity>
         </View>
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       {/* ============== MODALS ============== */}
 

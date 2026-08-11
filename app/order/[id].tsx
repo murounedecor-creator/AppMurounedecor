@@ -759,7 +759,7 @@ export default function OrderViewScreen() {
             ${paymentRows.map(p => `
               <div class="info-row">
                 <span class="label">${p.description} — ${format(parseISO(p.due_date), 'dd/MM/yyyy', { locale: ptBR })}</span>
-                <span>R$ ${Number(p.amount).toFixed(2).replace('.', ',')} ${p.status === 'paid' ? '(Pago)' : '(Pendente)'}</span>
+                <span>R$ ${Number(p.amount).toFixed(2).replace('.', ',')} ${p.status === 'completed' ? '(Pago)' : '(Pendente)'}</span>
               </div>
             `).join('')}
           </div>
@@ -1229,7 +1229,7 @@ export default function OrderViewScreen() {
             {products.map(p => (
               <View key={p.id} style={styles.itemCard}>
                 <Text style={styles.itemTitle}>{p.product_name}</Text>
-                <Text style={styles.itemDetail}>{p.meters.toFixed(2)}m × R$ {p.price_per_meter.toFixed(2).replace('.', ',')}/m</Text>
+                <Text style={styles.itemDetail}>{Number(p.quantity || 0).toFixed(2).replace('.', ',')} {p.unit || 'un'} × R$ {p.price_per_meter.toFixed(2).replace('.', ',')}</Text>
                 <Text style={styles.itemDetail}>Subtotal: R$ {p.subtotal.toFixed(2).replace('.', ',')}</Text>
               </View>
             ))}
@@ -1243,8 +1243,8 @@ export default function OrderViewScreen() {
             {services.map(s => (
               <View key={s.id} style={styles.itemCard}>
                 <View style={styles.itemHeader}>
-                  <Text style={styles.itemTitle}>{s.service_name}</Text>
-                  <Text style={styles.itemTitle}>R$ {s.value.toFixed(2).replace('.', ',')}</Text>
+                  <Text style={[styles.itemTitle, { flex: 1, marginRight: 8 }]}>{s.service_name}</Text>
+                  <Text style={[styles.itemTitle, { flexShrink: 0 }]}>R$ {s.value.toFixed(2).replace('.', ',')}</Text>
                 </View>
               </View>
             ))}
