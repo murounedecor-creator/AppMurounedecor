@@ -743,8 +743,29 @@ export default function OrderViewScreen() {
   const generateReceiptPDF = async () => {
     if (!order) return;
 
+    const { data: paymentRows } = await supabase
+      .from('transactions')
+      .select('description, amount, due_date, status')
+      .eq('order_id', order.id)
+      .eq('category', 'order_revenue')
+      .order('due_date', { ascending: true });
+
     setPdfLoading(true);
     try {
+      const cronogramaHtml = paymentRows && paymentRows.length > 0
+        ? `
+          <div class="section">
+            <div class="section-title">CRONOGRAMA DE PAGAMENTOS</div>
+            ${paymentRows.map(p => `
+              <div class="info-row">
+                <span class="label">${p.description} — ${format(parseISO(p.due_date), 'dd/MM/yyyy', { locale: ptBR })}</span>
+                <span>R$ ${Number(p.amount).toFixed(2).replace('.', ',')} ${p.status === 'paid' ? '(Pago)' : '(Pendente)'}</span>
+              </div>
+            `).join('')}
+          </div>
+        `
+        : '';
+
       const html = `
         <html>
           <head>
@@ -906,6 +927,7 @@ export default function OrderViewScreen() {
               </div>
             </div>
 
+            ${cronogramaHtml}
             <div class="footer">
               MUROUNE DECOR | murounedecor@gmail.com<br>
               Obrigado por escolher a Muroune Decor!<br>
