@@ -85,15 +85,21 @@ export default function FinancialsScreen() {
     const monthStart = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
     const monthEnd = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-    const { data: monthOrders } = await supabase
-      .from('orders')
-      .select('id')
-      .gte('order_date', monthStart)
-      .lte('order_date', monthEnd);
+    // Só considera pedidos que JÁ têm recebimento gerado dentro do mês selecionado
+    const { data: revenueTx } = await supabase
+      .from('transactions')
+      .select('order_id')
+      .eq('category', 'order_revenue')
+      .not('order_id', 'is', null)
+      .or(`and(date.gte.${monthStart},date.lte.${monthEnd}),and(due_date.gte.${monthStart},due_date.lte.${monthEnd})`);
 
-    const orderIds = (monthOrders || []).map((o: { id: string }) => o.id);
+    const orderIds = Array.from(
+      new Set((revenueTx || []).map((t: { order_id: string }) => t.order_id))
+    );
 
     let prodCost = 0;
+    let opExpenses = 0;
+
     if (orderIds.length > 0) {
       const { data: products } = await supabase
         .from('order_items_products')
@@ -103,18 +109,18 @@ export default function FinancialsScreen() {
         (sum, p) => sum + (Number(p.valor_custo || 0) * Number(p.quantity || 0)),
         0
       );
-    }
-    setProductCostTotal(prodCost);
 
-    const { data: expenses } = await supabase
-      .from('order_expenses')
-      .select('value')
-      .gte('expense_date', monthStart)
-      .lte('expense_date', monthEnd);
-    const opExpenses = (expenses || []).reduce(
-      (sum, e) => sum + Number(e.value || 0),
-      0
-    );
+      const { data: expenses } = await supabase
+        .from('order_expenses')
+        .select('value')
+        .in('order_id', orderIds);
+      opExpenses = (expenses || []).reduce(
+        (sum, e) => sum + Number(e.value || 0),
+        0
+      );
+    }
+
+    setProductCostTotal(prodCost);
     setOperationalExpenses(opExpenses);
   }, [currentMonth]);
 

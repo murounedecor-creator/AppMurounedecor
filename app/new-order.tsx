@@ -2281,7 +2281,7 @@ export default function NewOrderScreen() {
             showsVerticalScrollIndicator={false}
             keyboardShouldPersistTaps="handled"
             enableOnAndroid
-            extraScrollHeight={20}>
+            extraScrollHeight={100}>
             <View style={styles.modalHeader}>
               <TouchableOpacity onPress={() => {
                 setProductModal(false);

@@ -231,6 +231,7 @@ export default function OrdersScreen() {
 
       {/* Lista de Pedidos */}
       <FlatList
+        style={{ flex: 1 }}
         data={filtered}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
