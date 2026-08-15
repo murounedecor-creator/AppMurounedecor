@@ -245,6 +245,7 @@ export default function Dashboard() {
       onPress={() => router.push('/new-order')}>
       <Ionicons name="add" size={28} color={colors.white} />
     </TouchableOpacity>
+      <Text style={styles.buildLabel}>Build 2026-08-15-A</Text>
     </View>
   );
 }
@@ -477,5 +478,12 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.white,
     textAlign: 'center',
+  },
+  buildLabel: {
+    textAlign: 'center',
+    fontSize: 10,
+    color: colors.text.disabled,
+    paddingVertical: 4,
+    paddingBottom: 12,
   },
 });

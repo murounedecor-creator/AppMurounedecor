@@ -210,7 +210,8 @@ export default function NewOrderScreen() {
   const buildFurnitureDescription = (item: OrderFurniture): string => {
     const parts: string[] = [item.furnitureType];
     if (item.quantityPieces > 1) parts.push(`${item.quantityPieces}x`);
-    if (item.places > 0) parts.push(`${item.places} lugares`);
+    const showsPlaces = item.furnitureType === 'SOFÁ' || item.furnitureType === 'CHAISE';
+    if (showsPlaces && item.places > 0) parts.push(`${item.places} lugares`);
     if (item.seatCushions > 0) parts.push(`${item.seatCushions} almofadas no assento`);
     if (item.backrestCushions > 0) parts.push(`${item.backrestCushions} almofadas no encosto`);
     if (item.decorative > 0) parts.push(`${item.decorative} almofadas decorativas`);
@@ -1053,13 +1054,13 @@ export default function NewOrderScreen() {
     try {
       const orderNumber = editMode ? editOrderNumber : format(new Date(), 'yyMM') + '-' + Date.now().toString().slice(-4);
       const furnitureHtml = furnitures.map(f => {
+        const showsPlaces = f.furnitureType === 'SOFÁ' || f.furnitureType === 'CHAISE';
         let details = `<div style="margin-bottom:10px; font-size:12px;">`;
-        details += `<strong>${f.furnitureType}${f.places ? ` - ${f.places} lugares` : ''}${f.retractable ? ' - Retrátil' : ''}</strong><br>`;
+        details += `<strong>${f.furnitureType}${showsPlaces && f.places ? ` - ${f.places} lugares` : ''}${f.retractable ? ' - Retrátil' : ''}</strong><br>`;
         details += `Medidas: ${f.widthM || 0}m × ${f.depthM || 0}m × ${f.heightM || 0}m<br>`;
         if (f.seatCushions && f.seatCushions > 0) details += `Almofadas no Assento: ${f.seatCushions} unidades<br>`;
         if (f.backrestCushions && f.backrestCushions > 0) details += `Almofadas no Encosto: ${f.backrestCushions} unidades<br>`;
         if (f.observations) details += `Outros: ${f.observations}<br>`;
-        details += `Metragem estimada: ${formatarMetragem(f.calculatedMeters)} metros`;
         details += `</div>`;
         return details;
       }).join('');

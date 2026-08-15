@@ -181,6 +181,7 @@ export default function ProductsScreen() {
       </View>
 
       <FlatList
+        style={{ flex: 1 }}
         data={products}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (

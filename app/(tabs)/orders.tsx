@@ -219,6 +219,7 @@ export default function OrdersScreen() {
             ]}
             onPress={() => setActiveFilter(filter.id)}>
             <Text
+              maxFontSizeMultiplier={1.2}
               style={[
                 styles.filterButtonText,
                 activeFilter === filter.id && styles.filterButtonTextActive,
@@ -331,19 +332,22 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
   },
   filterContainer: {
+    height: 48,
     paddingHorizontal: 20,
-    paddingVertical: 8,
   },
   filterScroll: {
     gap: 8,
+    alignItems: 'center',
   },
   filterButton: {
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
     borderWidth: 1,
     borderColor: colors.border,
-    borderRadius: 20,
+    borderRadius: 16,
     backgroundColor: colors.surface,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   filterButtonActive: {
     backgroundColor: colors.primary.dark,
