@@ -232,7 +232,7 @@ export default function OrdersScreen() {
 
       {/* Lista de Pedidos */}
       <FlatList
-        style={{ flex: 1 }}
+        style={{ flex: 1, backgroundColor: 'green' }}
         data={filtered}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
@@ -299,7 +299,7 @@ export default function OrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: 'red',
   },
   header: {
     paddingHorizontal: 20,
@@ -334,6 +334,7 @@ const styles = StyleSheet.create({
   filterContainer: {
     height: 48,
     paddingHorizontal: 20,
+    backgroundColor: 'blue',
   },
   filterScroll: {
     gap: 8,
