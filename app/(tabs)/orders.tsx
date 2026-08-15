@@ -205,34 +205,36 @@ export default function OrdersScreen() {
       </View>
 
       {/* Filtros */}
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.filterScroll}
-        style={styles.filterContainer}>
-        {filters.map(filter => (
-          <TouchableOpacity
-            key={filter.id}
-            style={[
-              styles.filterButton,
-              activeFilter === filter.id && styles.filterButtonActive,
-            ]}
-            onPress={() => setActiveFilter(filter.id)}>
-            <Text
-              maxFontSizeMultiplier={1.2}
+      <View style={styles.filterWrapper}>
+        <ScrollView
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.filterScroll}
+          style={styles.filterContainer}>
+          {filters.map(filter => (
+            <TouchableOpacity
+              key={filter.id}
               style={[
-                styles.filterButtonText,
-                activeFilter === filter.id && styles.filterButtonTextActive,
+                styles.filterButton,
+                activeFilter === filter.id && styles.filterButtonActive,
+              ]}
+              onPress={() => setActiveFilter(filter.id)}>
+              <Text
+                maxFontSizeMultiplier={1.2}
+                style={[
+                  styles.filterButtonText,
+                  activeFilter === filter.id && styles.filterButtonTextActive,
               ]}>
-              {filter.label}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+                {filter.label}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      </View>
 
       {/* Lista de Pedidos */}
       <FlatList
-        style={{ flex: 1, backgroundColor: 'green' }}
+        style={{ flex: 1 }}
         data={filtered}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
@@ -299,7 +301,7 @@ export default function OrdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'red',
+    backgroundColor: colors.background,
   },
   header: {
     paddingHorizontal: 20,
@@ -331,10 +333,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.text.primary,
   },
-  filterContainer: {
+  filterWrapper: {
     height: 48,
     paddingHorizontal: 20,
-    backgroundColor: 'blue',
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  filterContainer: {
+    paddingHorizontal: 20,
   },
   filterScroll: {
     gap: 8,
