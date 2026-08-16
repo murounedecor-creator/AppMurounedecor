@@ -1,4 +1,4 @@
-export const colors = {
+export const lightColors = {
   primary: {
     light: '#F5F0EB',
     main: '#C9A96E',
@@ -28,3 +28,36 @@ export const colors = {
   revenue: '#00B341',
   expense: '#F31260',
 };
+
+export const darkColors = {
+  primary: {
+    light: '#3D3319',
+    main: '#C9A96E',
+    dark: '#E8C77E',
+  },
+  white: '#FFFFFF',
+  background: '#1C1810',
+  surface: '#26211A',
+  border: '#3A3226',
+  text: {
+    primary: '#F0E6D6',
+    secondary: '#C9A96E',
+    light: '#8B7F6A',
+    disabled: '#5C5344',
+  },
+  status: {
+    pending: '#FFB800',
+    waiting: '#FF9500',
+    inProgress: '#0070F3',
+    completed: '#00B341',
+    cancelled: '#F31260',
+  },
+  success: '#00B341',
+  warning: '#FFB800',
+  error: '#F31260',
+  info: '#0070F3',
+  revenue: '#00B341',
+  expense: '#F31260',
+};
+
+export const colors = lightColors;
