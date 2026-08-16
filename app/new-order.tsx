@@ -850,8 +850,8 @@ export default function NewOrderScreen() {
       return null;
     }
 
-    if (furnitures.length === 0) {
-      Alert.alert('Erro', 'Adicione pelo menos um móvel');
+    if (furnitures.length === 0 && services.length === 0 && orderProducts.length === 0) {
+      Alert.alert('Erro', 'Adicione pelo menos um item ao pedido (móvel, serviço ou produto)');
       return null;
     }
 
