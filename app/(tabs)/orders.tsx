@@ -9,7 +9,8 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabase';
 import { deleteOrderCascade } from '@/lib/orders';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,6 +31,8 @@ type Order = {
 };
 
 export default function OrdersScreen() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const params = useLocalSearchParams();
@@ -129,18 +132,18 @@ export default function OrdersScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return colors.status.pending;
+        return themeColors.status.pending;
       case 'awaiting_payment':
       case 'waiting_payment':
-        return colors.status.waiting;
+        return themeColors.status.waiting;
       case 'in_progress':
-        return colors.status.inProgress;
+        return themeColors.status.inProgress;
       case 'completed':
-        return colors.status.completed;
+        return themeColors.status.completed;
       case 'cancelled':
-        return colors.status.cancelled;
+        return themeColors.status.cancelled;
       default:
-        return colors.text.secondary;
+        return themeColors.text.secondary;
     }
   };
 
@@ -194,11 +197,11 @@ export default function OrdersScreen() {
 
       {/* Busca */}
       <View style={styles.searchContainer}>
-        <Ionicons name="search" size={20} color={colors.text.secondary} style={styles.searchIcon} />
+        <Ionicons name="search" size={20} color={themeColors.text.secondary} style={styles.searchIcon} />
         <TextInput
           style={styles.searchInput}
           placeholder="Buscar por número ou cliente..."
-          placeholderTextColor={colors.text.disabled}
+          placeholderTextColor={themeColors.text.disabled}
           value={searchText}
           onChangeText={setSearchText}
         />
@@ -292,13 +295,13 @@ export default function OrdersScreen() {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push('/new-order')}>
-        <Ionicons name="add" size={28} color={colors.white} />
+        <Ionicons name="add" size={28} color={themeColors.white} />
       </TouchableOpacity>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

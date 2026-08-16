@@ -1,7 +1,8 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Transaction } from '@/lib/supabase';
 import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -11,6 +12,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 
 export default function Dashboard() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [customers, setCustomers] = useState<number>(0);
@@ -73,17 +76,17 @@ export default function Dashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'pending':
-        return colors.status.pending;
+        return themeColors.status.pending;
       case 'waiting_payment':
-        return colors.status.waiting;
+        return themeColors.status.waiting;
       case 'in_progress':
-        return colors.status.inProgress;
+        return themeColors.status.inProgress;
       case 'completed':
-        return colors.status.completed;
+        return themeColors.status.completed;
       case 'cancelled':
-        return colors.status.cancelled;
+        return themeColors.status.cancelled;
       default:
-        return colors.text.secondary;
+        return themeColors.text.secondary;
     }
   };
 
@@ -180,9 +183,9 @@ export default function Dashboard() {
             <Text style={styles.totalLabel}>Total do Mês</Text>
             <TouchableOpacity onPress={() => setHideTotal(!hideTotal)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
               {hideTotal ? (
-                <EyeOff size={20} color={colors.white} />
+                <EyeOff size={20} color={themeColors.white} />
               ) : (
-                <Eye size={20} color={colors.white} />
+                <Eye size={20} color={themeColors.white} />
               )}
             </TouchableOpacity>
           </View>
@@ -243,14 +246,14 @@ export default function Dashboard() {
     <TouchableOpacity
       style={[styles.fab, { bottom: 80 + insets.bottom }]}
       onPress={() => router.push('/new-order')}>
-      <Ionicons name="add" size={28} color={colors.white} />
+      <Ionicons name="add" size={28} color={themeColors.white} />
     </TouchableOpacity>
       <Text style={styles.buildLabel}>Build 2026-08-15-A</Text>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

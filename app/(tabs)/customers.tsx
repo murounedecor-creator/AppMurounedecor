@@ -13,7 +13,8 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Customer } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import * as Contacts from 'expo-contacts';
@@ -33,6 +34,8 @@ interface VisitaDoDia {
 }
 
 export default function CustomersScreen() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filtered, setFiltered] = useState<Customer[]>([]);
@@ -548,11 +551,11 @@ export default function CustomersScreen() {
       {abaAtiva === 'Clientes' ? (
         <>
           <View style={styles.searchContainer}>
-            <Ionicons name="search" size={20} color={colors.text.secondary} style={styles.searchIcon} />
+            <Ionicons name="search" size={20} color={themeColors.text.secondary} style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
               placeholder="Buscar cliente..."
-              placeholderTextColor={colors.text.disabled}
+              placeholderTextColor={themeColors.text.disabled}
               value={searchText}
               onChangeText={setSearchText}
             />
@@ -578,17 +581,17 @@ export default function CustomersScreen() {
                   <TouchableOpacity
                     onPress={() => handleOpenMap(item.address, item.city)}
                     style={styles.actionBtn}>
-                    <Ionicons name="location" size={18} color={colors.primary.dark} />
+                    <Ionicons name="location" size={18} color={themeColors.primary.dark} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => handleOpenModal(item)}
                     style={styles.actionBtn}>
-                    <Ionicons name="pencil" size={18} color={colors.primary.dark} />
+                    <Ionicons name="pencil" size={18} color={themeColors.primary.dark} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => handleDeleteCustomer(item.id)}
                     style={styles.actionBtn}>
-                    <Ionicons name="trash" size={18} color={colors.error} />
+                    <Ionicons name="trash" size={18} color={themeColors.error} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -603,7 +606,7 @@ export default function CustomersScreen() {
           <TouchableOpacity
             style={styles.fab}
             onPress={() => handleOpenModal()}>
-            <Ionicons name="add" size={28} color={colors.white} />
+            <Ionicons name="add" size={28} color={themeColors.white} />
           </TouchableOpacity>
         </>
       ) : (
@@ -680,7 +683,7 @@ export default function CustomersScreen() {
                 <View />
               ) : (
                 <TouchableOpacity onPress={handleImportFromContacts} style={{ padding: 4 }}>
-                  <Ionicons name="people" size={24} color={colors.primary.dark} />
+                  <Ionicons name="people" size={24} color={themeColors.primary.dark} />
                 </TouchableOpacity>
               )}
             </View>
@@ -690,7 +693,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Nome *"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.name}
                 onChangeText={(text) => setForm({ ...form, name: text })}
               />
@@ -698,7 +701,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Celular"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.phone}
                 onChangeText={(text) => setForm({ ...form, phone: text })}
                 keyboardType="phone-pad"
@@ -707,7 +710,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="E-mail"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.email}
                 onChangeText={(text) => setForm({ ...form, email: text })}
                 keyboardType="email-address"
@@ -716,7 +719,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="CPF/CNPJ"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.cpf_cnpj}
                 onChangeText={(text) => setForm({ ...form, cpf_cnpj: text })}
               />
@@ -724,7 +727,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="CEP"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.zipcode}
                 onChangeText={(text) => {
                   const cleaned = text.replace(/\D/g, '');
@@ -741,7 +744,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Endereço"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.address}
                 onChangeText={(text) => setForm({ ...form, address: text })}
               />
@@ -749,7 +752,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Cidade"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.city}
                 onChangeText={(text) => setForm({ ...form, city: text })}
               />
@@ -757,7 +760,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="UF"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.state}
                 onChangeText={(text) => setForm({ ...form, state: text.toUpperCase() })}
                 maxLength={2}
@@ -766,7 +769,7 @@ export default function CustomersScreen() {
               <TextInput
                 style={[styles.input, styles.textarea]}
                 placeholder="Observações"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.notes}
                 onChangeText={(text) => setForm({ ...form, notes: text })}
                 multiline
@@ -799,11 +802,11 @@ export default function CustomersScreen() {
             </View>
 
             <View style={styles.searchContainer}>
-              <Ionicons name="search" size={20} color={colors.text.secondary} style={styles.searchIcon} />
+              <Ionicons name="search" size={20} color={themeColors.text.secondary} style={styles.searchIcon} />
               <TextInput
                 style={styles.searchInput}
                 placeholder="Buscar cliente..."
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={searchVisitas}
                 onChangeText={setSearchVisitas}
               />
@@ -871,7 +874,7 @@ export default function CustomersScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
