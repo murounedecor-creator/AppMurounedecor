@@ -34,7 +34,9 @@ jobs:
           echo "EXPO_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}" >> .env
 
       - name: Gerar pasta android (expo prebuild)
-        run: npx expo prebuild --platform android --non-interactive
+        run: npx expo prebuild --platform android
+        env:
+          CI: '1'
 
       - name: Restaurar keystore a partir do segredo
         run: echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
