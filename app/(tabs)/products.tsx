@@ -23,6 +23,7 @@ const ImagePicker = Platform.OS !== 'web' ? require('expo-image-picker') : null;
 export default function ProductsScreen() {
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
+  const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -180,9 +181,22 @@ export default function ProductsScreen() {
         <Text style={styles.title}>Produtos</Text>
       </View>
 
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Buscar produto..."
+          placeholderTextColor={colors.text.disabled}
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+      </View>
+
       <FlatList
         style={{ flex: 1 }}
-        data={products}
+        data={products.filter(p =>
+          p.name.toLowerCase().includes(searchText.toLowerCase()) ||
+          p.code.toLowerCase().includes(searchText.toLowerCase())
+        )}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <View style={styles.productCard}>
@@ -343,6 +357,20 @@ export default function ProductsScreen() {
 }
 
 const styles = StyleSheet.create({
+  searchContainer: {
+    marginHorizontal: 20,
+    marginVertical: 12,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: colors.text.primary,
+    backgroundColor: colors.surface,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,

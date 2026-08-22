@@ -173,7 +173,7 @@ export default function NewOrderScreen() {
   const [furnitureModal, setFurnitureModal] = useState(false);
   const [currentFurniture, setCurrentFurniture] = useState<Partial<OrderFurniture>>({
     id: '',
-    furnitureType: 'SOFÁ',
+    furnitureType: '',
     quantityPieces: 1,
     widthM: '',
     depthM: '',
@@ -181,7 +181,7 @@ export default function NewOrderScreen() {
     calculatedMeters: 0,
     photoBase64: null,
     retractable: false,
-    places: 2,
+    places: 0,
     seatCushions: 0,
     backrestCushions: 0,
     decorative: 0,
@@ -203,6 +203,7 @@ export default function NewOrderScreen() {
   const [serviceTab, setServiceTab] = useState<'novo' | 'catalogo'>('novo');
   const [serviceSaveToCatalog, setServiceSaveToCatalog] = useState(false);
   const [catalogServices, setCatalogServices] = useState<CatalogService[]>([]);
+  const [serviceSearchText, setServiceSearchText] = useState('');
   const [selectedServiceCategory, setSelectedServiceCategory] = useState<string | null>(null);
 
   const SERVICE_CATEGORIES = ['Estofamento', 'Confecção de Capa', 'Cabeceira', 'Cortina', 'Outros'];
@@ -250,6 +251,7 @@ export default function NewOrderScreen() {
   const [productTab, setProductTab] = useState<'novo' | 'catalogo'>('novo');
   const [productSaveToCatalog, setProductSaveToCatalog] = useState(false);
   const [catalogProducts, setCatalogProducts] = useState<Product[]>([]);
+  const [productSearchText, setProductSearchText] = useState('');
 
   // Expenses section
   const [expenses, setExpenses] = useState<OrderExpense[]>([]);
@@ -272,8 +274,8 @@ export default function NewOrderScreen() {
   const [freight, setFreight] = useState('');
 
   // Payment section
-  const [paymentMethod, setPaymentMethod] = useState('Cartão de Crédito');
-  const [paymentCondition, setPaymentCondition] = useState('À vista');
+  const [paymentMethod, setPaymentMethod] = useState('');
+  const [paymentCondition, setPaymentCondition] = useState('');
   const [observations, setObservations] = useState('');
 
   // Modal selectors
@@ -305,8 +307,8 @@ export default function NewOrderScreen() {
           setFreight(orderData.freight?.toString() || '0');
           setDiscountValue(orderData.discount_value?.toString() || '0');
           setDiscountType((orderData.discount_type as 'percentage' | 'fixed') || 'percentage');
-          setPaymentMethod(orderData.payment_method || 'Cartão de Crédito');
-          setPaymentCondition(orderData.payment_condition || 'À vista');
+          setPaymentMethod(orderData.payment_method || '');
+          setPaymentCondition(orderData.payment_condition || '');
           setObservations(orderData.observations || '');
           setEditOrderId(orderData.id);
           setEditMode(true);
@@ -2253,10 +2255,23 @@ export default function NewOrderScreen() {
               </View>
             ) : (
               <View style={styles.catalogList}>
-                {catalogServices.length === 0 ? (
-                  <Text style={styles.emptyCatalogText}>Nenhum serviço salvo no catálogo</Text>
+                <TextInput
+                  style={styles.searchInputCatalog}
+                  placeholder="Buscar serviço..."
+                  placeholderTextColor={colors.text.disabled}
+                  value={serviceSearchText}
+                  onChangeText={setServiceSearchText}
+                />
+                {catalogServices.filter(s =>
+                  s.nome.toLowerCase().includes(serviceSearchText.toLowerCase())
+                ).length === 0 ? (
+                  <Text style={styles.emptyCatalogText}>Nenhum serviço encontrado</Text>
                 ) : (
-                  catalogServices.map(service => (
+                  catalogServices
+                    .filter(s =>
+                      s.nome.toLowerCase().includes(serviceSearchText.toLowerCase())
+                    )
+                    .map(service => (
                     <TouchableOpacity
                       key={service.id}
                       style={styles.catalogItem}
@@ -2412,10 +2427,23 @@ export default function NewOrderScreen() {
               </View>
             ) : (
               <View style={styles.catalogList}>
-                {catalogProducts.length === 0 ? (
-                  <Text style={styles.emptyCatalogText}>Nenhum produto salvo no catálogo</Text>
+                <TextInput
+                  style={styles.searchInputCatalog}
+                  placeholder="Buscar produto..."
+                  placeholderTextColor={colors.text.disabled}
+                  value={productSearchText}
+                  onChangeText={setProductSearchText}
+                />
+                {catalogProducts.filter(p =>
+                  p.name.toLowerCase().includes(productSearchText.toLowerCase())
+                ).length === 0 ? (
+                  <Text style={styles.emptyCatalogText}>Nenhum produto encontrado</Text>
                 ) : (
-                  catalogProducts.map(product => (
+                  catalogProducts
+                    .filter(p =>
+                      p.name.toLowerCase().includes(productSearchText.toLowerCase())
+                    )
+                    .map(product => (
                     <TouchableOpacity
                       key={product.id}
                       style={styles.catalogItem}
@@ -3236,6 +3264,17 @@ const styles = StyleSheet.create({
     color: colors.text.disabled,
     textAlign: 'center',
     paddingVertical: 40,
+  },
+  searchInputCatalog: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    marginBottom: 10,
+    fontSize: 14,
+    color: colors.text.primary,
+    backgroundColor: colors.surface,
   },
   conditionGrid: {
     marginTop: 8,

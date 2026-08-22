@@ -122,7 +122,11 @@ export default function OrdersScreen() {
         );
         break;
       case 'completed':
-        result = result.filter(o => o.status === 'completed');
+      case 'pending':
+      case 'waiting_payment':
+      case 'in_progress':
+      case 'cancelled':
+        result = result.filter(o => o.status === activeFilter);
         break;
     }
 
@@ -235,6 +239,38 @@ export default function OrdersScreen() {
         </ScrollView>
       </View>
 
+      {/* Filtro de Status */}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.statusFilterScroll}
+        style={styles.statusFilterWrapper}>
+        {[
+          { id: 'pending', label: 'Pendente' },
+          { id: 'waiting_payment', label: 'Aguardando Pagamento' },
+          { id: 'in_progress', label: 'Em Andamento' },
+          { id: 'completed', label: 'Concluído' },
+          { id: 'cancelled', label: 'Cancelado' },
+        ].map(status => (
+          <TouchableOpacity
+            key={status.id}
+            style={[
+              styles.filterButton,
+              activeFilter === status.id && styles.filterButtonActive,
+            ]}
+            onPress={() => setActiveFilter(status.id)}>
+            <Text
+              maxFontSizeMultiplier={1.2}
+              style={[
+                styles.filterButtonText,
+                activeFilter === status.id && styles.filterButtonTextActive,
+              ]}>
+              {status.label}
+            </Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
       {/* Lista de Pedidos */}
       <FlatList
         style={{ flex: 1 }}
@@ -341,6 +377,16 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingHorizontal: 20,
     justifyContent: 'center',
     overflow: 'hidden',
+  },
+  statusFilterWrapper: {
+    height: 48,
+    paddingHorizontal: 20,
+    justifyContent: 'center',
+    overflow: 'hidden',
+  },
+  statusFilterScroll: {
+    gap: 8,
+    alignItems: 'center',
   },
   filterContainer: {
     paddingHorizontal: 20,

@@ -53,8 +53,10 @@
           "backgroundColor": "#FFFFFF",
           "imageWidth": 200
         }
-      ],
-      "./plugins/withAndroidReleaseSigning.js"
-    ]
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
   }
 }

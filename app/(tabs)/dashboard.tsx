@@ -193,33 +193,6 @@ export default function Dashboard() {
             {hideTotal ? 'R$ ••••' : `R$ ${monthlyTotal.toFixed(2).replace('.', ',')}`}
           </Text>
         </View>
-
-        {/* Order Status Summary */}
-        <View style={styles.statusGrid}>
-          {['pending', 'waiting_payment', 'in_progress', 'completed', 'cancelled'].map(
-            status => {
-              const count = orders.filter(o => o.status === status).length;
-              return (
-                <TouchableOpacity
-                  key={status}
-                  style={styles.statusItem}
-                  onPress={() => router.push({
-                    pathname: '/(tabs)/orders',
-                    params: { filtroStatus: status }
-                  })}>
-                  <View
-                    style={[
-                      styles.statusDot,
-                      { backgroundColor: getStatusColor(status) },
-                    ]}
-                  />
-                  <Text style={styles.statusLabel}>{getStatusLabel(status)}</Text>
-                  <Text style={styles.statusCount}>{count}</Text>
-                </TouchableOpacity>
-              );
-            }
-          )}
-        </View>
       </View>
 
       {/* Quick Actions */}
