@@ -574,7 +574,7 @@ export default function NewOrderScreen() {
   const resetFurnitureForm = () => {
     setCurrentFurniture({
       id: '',
-      furnitureType: 'SOFÁ',
+      furnitureType: '',
       quantityPieces: 1,
       widthM: '',
       depthM: '',
@@ -582,7 +582,7 @@ export default function NewOrderScreen() {
       calculatedMeters: 0,
       photoBase64: null,
       retractable: false,
-      places: 2,
+      places: 0,
       seatCushions: 0,
       backrestCushions: 0,
       decorative: 0,
