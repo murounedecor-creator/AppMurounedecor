@@ -167,8 +167,15 @@ export default function ProductsScreen() {
             if (error) throw error;
             loadProducts();
             Alert.alert('Sucesso', 'Produto excluído');
-          } catch (error) {
-            Alert.alert('Erro', 'Falha ao excluir');
+          } catch (error: any) {
+            if (error?.code === '23503') {
+              Alert.alert(
+                'Não foi possível excluir',
+                'Este produto já foi usado em um ou mais pedidos e não pode ser excluído, para preservar o histórico. Se não quiser mais usá-lo, edite o produto e reduza seu preço ou o retire das buscas manualmente.'
+              );
+            } else {
+              Alert.alert('Erro', error?.message || 'Falha ao excluir');
+            }
           }
         },
       },

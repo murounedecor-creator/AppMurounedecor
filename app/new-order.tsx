@@ -1497,13 +1497,13 @@ export default function NewOrderScreen() {
           {orderProducts.map(product => (
             <View key={product.id} style={styles.itemCard}>
               <View style={styles.itemCardHeader}>
-                <View>
+                <View style={{ flex: 1, marginRight: 8 }}>
                   <Text style={styles.itemCardTitle}>{product.productName}</Text>
                   <Text style={styles.itemCardDetail}>
                     {parseQuantidade(product.quantity)}x {product.unit || 'Unitário'} - R$ {product.subtotal.toFixed(2).replace('.', ',')}
                   </Text>
                 </View>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexShrink: 0 }}>
                   <TouchableOpacity onPress={() => handleEditProduct(product)} style={{ padding: 4 }}>
                     <Ionicons name="pencil-outline" size={18} color="#C9A96E" />
                   </TouchableOpacity>
