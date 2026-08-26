@@ -11,7 +11,8 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Product } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
@@ -21,6 +22,8 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 const ImagePicker = Platform.OS !== 'web' ? require('expo-image-picker') : null;
 
 export default function ProductsScreen() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -192,7 +195,7 @@ export default function ProductsScreen() {
         <TextInput
           style={styles.searchInput}
           placeholder="Buscar produto..."
-          placeholderTextColor={colors.text.disabled}
+          placeholderTextColor={themeColors.text.disabled}
           value={searchText}
           onChangeText={setSearchText}
         />
@@ -225,10 +228,10 @@ export default function ProductsScreen() {
             </View>
             <View style={styles.actions}>
               <TouchableOpacity onPress={() => handleOpenModal(item)}>
-                <Ionicons name="pencil" size={20} color={colors.primary.dark} />
+                <Ionicons name="pencil" size={20} color={themeColors.primary.dark} />
               </TouchableOpacity>
               <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                <Ionicons name="trash" size={20} color={colors.error} />
+                <Ionicons name="trash" size={20} color={themeColors.error} />
               </TouchableOpacity>
             </View>
           </View>
@@ -241,7 +244,7 @@ export default function ProductsScreen() {
       />
 
       <TouchableOpacity style={styles.fab} onPress={() => handleOpenModal()}>
-        <Ionicons name="add" size={28} color={colors.white} />
+        <Ionicons name="add" size={28} color={themeColors.white} />
       </TouchableOpacity>
 
       {/* Modal */}
@@ -267,7 +270,7 @@ export default function ProductsScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Nome *"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.name}
                 onChangeText={(text) => setForm({ ...form, name: text })}
               />
@@ -275,15 +278,17 @@ export default function ProductsScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Código *"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.code}
                 onChangeText={(text) => setForm({ ...form, code: text })}
+                autoComplete="off"
+                importantForAutofill="no"
               />
 
               <TextInput
                 style={styles.input}
                 placeholder="Valor de Venda por Unidade"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.sale_price_per_unit}
                 onChangeText={(text) =>
                   setForm({ ...form, sale_price_per_unit: text })
@@ -294,7 +299,7 @@ export default function ProductsScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Valor de Custo por Unidade"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={form.cost_price_per_unit}
                 onChangeText={(text) =>
                   setForm({ ...form, cost_price_per_unit: text })
@@ -330,7 +335,7 @@ export default function ProductsScreen() {
               <TouchableOpacity
                 style={styles.addImageBtn}
                 onPress={handleAddImage}>
-                <Ionicons name="camera" size={20} color={colors.white} />
+                <Ionicons name="camera" size={20} color={themeColors.white} />
                 <Text style={styles.addImageBtnText}>Adicionar Foto</Text>
               </TouchableOpacity>
 
@@ -341,7 +346,7 @@ export default function ProductsScreen() {
                     <TouchableOpacity
                       style={styles.removeImageBtn}
                       onPress={() => handleRemoveImage(index)}>
-                      <Ionicons name="close" size={16} color={colors.white} />
+                      <Ionicons name="close" size={16} color={themeColors.white} />
                     </TouchableOpacity>
                   </View>
                 ))}
@@ -363,7 +368,7 @@ export default function ProductsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   searchContainer: {
     marginHorizontal: 20,
     marginVertical: 12,

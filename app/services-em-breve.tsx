@@ -1,19 +1,22 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ServicesEmBreveScreen() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
       <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Ionicons name="arrow-back" size={24} color={colors.primary.dark} />
+        <Ionicons name="arrow-back" size={24} color={themeColors.primary.dark} />
       </TouchableOpacity>
       <View style={styles.content}>
-        <Ionicons name="construct-outline" size={48} color={colors.text.light} />
+        <Ionicons name="construct-outline" size={48} color={themeColors.text.light} />
         <Text style={styles.title}>Catálogo de Serviços</Text>
         <Text style={styles.subtitle}>
           Essa tela está em construção. Em breve você vai poder cadastrar,
@@ -25,7 +28,7 @@ export default function ServicesEmBreveScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

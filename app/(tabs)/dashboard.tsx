@@ -31,7 +31,7 @@ export default function Dashboard() {
         supabase.from('customers').select('id', { count: 'exact' }),
         supabase.from('products').select('id', { count: 'exact' }),
         supabase.from('services').select('id', { count: 'exact' }),
-        supabase.from('transactions').select('*').gte('date', format(startOfMonth(new Date()), 'yyyy-MM-dd')).lte('date', format(endOfMonth(new Date()), 'yyyy-MM-dd')),
+        supabase.from('transactions').select('*').gte('date', format(startOfMonth(currentDate), 'yyyy-MM-dd')).lte('date', format(endOfMonth(currentDate), 'yyyy-MM-dd')),
         supabase.from('orders').select('status'),
       ]);
 
@@ -46,7 +46,7 @@ export default function Dashboard() {
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     }
-  }, []);
+  }, [currentDate]);
 
   useFocusEffect(
     useCallback(() => {
@@ -346,7 +346,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,
-    backgroundColor: colors.white,
+    backgroundColor: colors.primary.main,
+    margin: 2,
     marginBottom: 4,
     overflow: 'visible',
   },
@@ -356,7 +357,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   dayNumber: {
     fontSize: 13,
     fontWeight: '600',
-    color: colors.text.primary,
+    color: colors.white,
     textAlign: 'center',
     minWidth: 24,
   },
