@@ -8,7 +8,8 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Transaction, Customer } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -37,14 +38,16 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: 'Cancelado',
 };
 const STATUS_COLOR: Record<string, string> = {
-  pending: colors.status.pending,
-  waiting_payment: colors.status.waiting,
-  in_progress: colors.status.inProgress,
-  completed: colors.status.completed,
-  cancelled: colors.status.cancelled,
+  pending: lightColors.status.pending,
+  waiting_payment: lightColors.status.waiting,
+  in_progress: lightColors.status.inProgress,
+  completed: lightColors.status.completed,
+  cancelled: lightColors.status.cancelled,
 };
 
 export default function FinancialsScreen() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
   const [subTab, setSubTab] = useState<SubTab>('payments');
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -219,7 +222,7 @@ export default function FinancialsScreen() {
         onPress={() => { setSelected(t); setDetailVisible(true); }}>
         <View style={styles.cardLeft}>
           <Text style={styles.cardDate}>{format(new Date(t.date), 'dd/MM')}</Text>
-          <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[t.status] || colors.text.disabled }]} />
+          <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[t.status] || themeColors.text.disabled }]} />
         </View>
         <View style={styles.cardCenter}>
           <Text style={styles.cardCondition}>{t.payment_condition || 'À vista'}</Text>
@@ -245,7 +248,7 @@ export default function FinancialsScreen() {
         <Ionicons
           name={t.type === 'revenue' ? 'trending-up' : 'trending-down'}
           size={14}
-          color={t.type === 'revenue' ? colors.revenue : colors.expense}
+          color={t.type === 'revenue' ? themeColors.revenue : themeColors.expense}
         />
       </View>
       <View style={styles.cardCenter}>
@@ -254,7 +257,7 @@ export default function FinancialsScreen() {
         {t.order_id ? <Text style={styles.cardTag}>Pedido vinculado</Text> : null}
         {t.category ? <Text style={styles.cardTag}>{t.category.replace(/_/g, ' ')}</Text> : null}
       </View>
-      <Text style={[styles.cashflowAmt, { color: t.type === 'revenue' ? colors.revenue : colors.expense }]}>
+      <Text style={[styles.cashflowAmt, { color: t.type === 'revenue' ? themeColors.revenue : themeColors.expense }]}>
         {t.type === 'revenue' ? '+' : '-'}{fmt(Number(t.amount))}
       </Text>
     </View>
@@ -271,7 +274,7 @@ export default function FinancialsScreen() {
             <View style={styles.modalHead}>
               <Text style={styles.modalTitle}>Detalhes do Pagamento</Text>
               <TouchableOpacity onPress={() => { setDetailVisible(false); setSelected(null); }}>
-                <Ionicons name="close" size={24} color={colors.text.primary} />
+                <Ionicons name="close" size={24} color={themeColors.text.primary} />
               </TouchableOpacity>
             </View>
 
@@ -299,7 +302,7 @@ export default function FinancialsScreen() {
 
             {selected.status !== 'completed' && selected.status !== 'cancelled' && (
               <TouchableOpacity style={styles.receiveBtn} onPress={() => markReceived(selected)}>
-                <Ionicons name="checkmark-circle" size={20} color={colors.white} />
+                <Ionicons name="checkmark-circle" size={20} color={themeColors.white} />
                 <Text style={styles.receiveBtnText}>Marcar como Recebido</Text>
               </TouchableOpacity>
             )}
@@ -317,7 +320,7 @@ export default function FinancialsScreen() {
           <View style={styles.modalHead}>
             <Text style={styles.modalTitle}>Definições de Lucro</Text>
             <TouchableOpacity onPress={() => setSettingsVisible(false)}>
-              <Ionicons name="close" size={24} color={colors.text.primary} />
+              <Ionicons name="close" size={24} color={themeColors.text.primary} />
             </TouchableOpacity>
           </View>
           <Text style={styles.settingsDesc}>Selecione o que entra no cálculo do Lucro Real</Text>
@@ -332,7 +335,7 @@ export default function FinancialsScreen() {
               <Ionicons
                 name={profitSettings[item.key] ? 'checkbox' : 'square-outline'}
                 size={22}
-                color={colors.primary.dark}
+                color={themeColors.primary.dark}
               />
               <Text style={styles.settingsLabel}>{item.label}</Text>
             </TouchableOpacity>
@@ -379,15 +382,15 @@ export default function FinancialsScreen() {
   const renderCashflowTab = () => (
     <>
       <View style={styles.summaryCards}>
-        <View style={[styles.summaryCard, { borderLeftColor: colors.revenue }]}>
-          <Ionicons name="trending-up" size={18} color={colors.revenue} />
+        <View style={[styles.summaryCard, { borderLeftColor: themeColors.revenue }]}>
+          <Ionicons name="trending-up" size={18} color={themeColors.revenue} />
           <Text style={styles.summaryLabel}>Receitas</Text>
-          <Text style={[styles.summaryValue, { color: colors.revenue }]}>{fmt(totalRevenue)}</Text>
+          <Text style={[styles.summaryValue, { color: themeColors.revenue }]}>{fmt(totalRevenue)}</Text>
         </View>
-        <View style={[styles.summaryCard, { borderLeftColor: colors.expense }]}>
-          <Ionicons name="trending-down" size={18} color={colors.expense} />
+        <View style={[styles.summaryCard, { borderLeftColor: themeColors.expense }]}>
+          <Ionicons name="trending-down" size={18} color={themeColors.expense} />
           <Text style={styles.summaryLabel}>Despesas</Text>
-          <Text style={[styles.summaryValue, { color: colors.expense }]}>{fmt(totalExpense)}</Text>
+          <Text style={[styles.summaryValue, { color: themeColors.expense }]}>{fmt(totalExpense)}</Text>
         </View>
       </View>
       <View style={styles.filterRow}>
@@ -425,11 +428,11 @@ export default function FinancialsScreen() {
             <Ionicons
               name={profitHidden ? 'eye-off' : 'eye'}
               size={22}
-              color={colors.text.secondary}
+              color={themeColors.text.secondary}
             />
           </TouchableOpacity>
         </View>
-        <Text style={[styles.profitValue, { color: netProfit >= 0 ? colors.revenue : colors.expense }]}>
+        <Text style={[styles.profitValue, { color: netProfit >= 0 ? themeColors.revenue : themeColors.expense }]}>
           {profitHidden ? 'R$ •••••' : fmt(netProfit)}
         </Text>
 
@@ -440,11 +443,11 @@ export default function FinancialsScreen() {
         </View>
         <View style={styles.barLegend}>
           <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: colors.revenue }]} />
+            <View style={[styles.legendDot, { backgroundColor: themeColors.revenue }]} />
             <Text style={styles.legendText}>Receitas</Text>
           </View>
           <View style={styles.legendItem}>
-            <View style={[styles.legendDot, { backgroundColor: colors.expense }]} />
+            <View style={[styles.legendDot, { backgroundColor: themeColors.expense }]} />
             <Text style={styles.legendText}>Custos/Despesas</Text>
           </View>
         </View>
@@ -456,29 +459,29 @@ export default function FinancialsScreen() {
 
         <View style={styles.breakdownRow}>
           <View style={styles.breakdownLeft}>
-            <Ionicons name="trending-up" size={16} color={colors.revenue} />
+            <Ionicons name="trending-up" size={16} color={themeColors.revenue} />
             <Text style={styles.breakdownLabel}>Receitas</Text>
           </View>
-          <Text style={[styles.breakdownAmt, { color: colors.revenue }]}>{fmt(totalRevenue)}</Text>
+          <Text style={[styles.breakdownAmt, { color: themeColors.revenue }]}>{fmt(totalRevenue)}</Text>
         </View>
 
         {profitSettings.includeProductCost && (
           <View style={styles.breakdownRow}>
             <View style={styles.breakdownLeft}>
-              <Ionicons name="cube" size={16} color={colors.expense} />
+              <Ionicons name="cube" size={16} color={themeColors.expense} />
               <Text style={styles.breakdownLabel}>Custo de Produtos</Text>
             </View>
-            <Text style={[styles.breakdownAmt, { color: colors.expense }]}>-{fmt(productCostTotal)}</Text>
+            <Text style={[styles.breakdownAmt, { color: themeColors.expense }]}>-{fmt(productCostTotal)}</Text>
           </View>
         )}
 
         {profitSettings.includeExpenses && (
           <View style={styles.breakdownRow}>
             <View style={styles.breakdownLeft}>
-              <Ionicons name="trending-down" size={16} color={colors.expense} />
+              <Ionicons name="trending-down" size={16} color={themeColors.expense} />
               <Text style={styles.breakdownLabel}>Despesas Operacionais</Text>
             </View>
-            <Text style={[styles.breakdownAmt, { color: colors.expense }]}>-{fmt(operationalExpenses)}</Text>
+            <Text style={[styles.breakdownAmt, { color: themeColors.expense }]}>-{fmt(operationalExpenses)}</Text>
           </View>
         )}
 
@@ -486,12 +489,12 @@ export default function FinancialsScreen() {
 
         <View style={styles.breakdownRow}>
           <View style={styles.breakdownLeft}>
-            <Ionicons name="calculator" size={16} color={netProfit >= 0 ? colors.revenue : colors.expense} />
+            <Ionicons name="calculator" size={16} color={netProfit >= 0 ? themeColors.revenue : themeColors.expense} />
             <Text style={[styles.breakdownLabel, { fontWeight: '700' }]}>Lucro Real</Text>
           </View>
           <Text style={[
             styles.breakdownAmt,
-            { fontWeight: '700', color: netProfit >= 0 ? colors.revenue : colors.expense },
+            { fontWeight: '700', color: netProfit >= 0 ? themeColors.revenue : themeColors.expense },
           ]}>
             {profitHidden ? '•••••' : fmt(netProfit)}
           </Text>
@@ -500,7 +503,7 @@ export default function FinancialsScreen() {
 
       {/* Settings Button */}
       <TouchableOpacity style={styles.settingsBtn} onPress={() => setSettingsVisible(true)}>
-        <Ionicons name="settings-outline" size={18} color={colors.primary.dark} />
+        <Ionicons name="settings-outline" size={18} color={themeColors.primary.dark} />
         <Text style={styles.settingsBtnText}>Definições de Lucro</Text>
       </TouchableOpacity>
 
@@ -536,13 +539,13 @@ export default function FinancialsScreen() {
       {/* Month Navigation */}
       <View style={styles.monthNav}>
         <TouchableOpacity onPress={() => setCurrentMonth(subMonths(currentMonth, 1))} style={styles.navBtn}>
-          <Ionicons name="chevron-back" size={20} color={colors.text.primary} />
+          <Ionicons name="chevron-back" size={20} color={themeColors.text.primary} />
         </TouchableOpacity>
         <Text style={styles.monthLabel}>
           {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
         </Text>
         <TouchableOpacity onPress={() => setCurrentMonth(addMonths(currentMonth, 1))} style={styles.navBtn}>
-          <Ionicons name="chevron-forward" size={20} color={colors.text.primary} />
+          <Ionicons name="chevron-forward" size={20} color={themeColors.text.primary} />
         </TouchableOpacity>
       </View>
 
@@ -556,7 +559,7 @@ export default function FinancialsScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
     paddingHorizontal: 20,

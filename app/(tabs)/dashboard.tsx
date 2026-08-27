@@ -347,7 +347,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     alignItems: 'center',
     borderRadius: 6,
     backgroundColor: colors.primary.main,
-    margin: 2,
     marginBottom: 4,
     overflow: 'visible',
   },

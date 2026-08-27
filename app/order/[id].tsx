@@ -367,7 +367,7 @@ export default function OrderViewScreen() {
         style: 'destructive',
         onPress: async () => {
           try {
-            await deleteOrderCascade(id);
+            await deleteOrderCascade(String(id));
             Alert.alert('Sucesso', 'Pedido excluído', [
               { text: 'OK', onPress: () => router.back() },
             ]);
@@ -722,10 +722,6 @@ export default function OrderViewScreen() {
         </html>
       `;
 
-      if (Platform.OS === 'web' || !Print || !Sharing) {
-        Alert.alert('Aviso', 'Geração de PDF não disponível na web');
-        return;
-      }
       if (Platform.OS === 'web' || !Print || !Sharing) {
         Alert.alert('Aviso', 'Geração de PDF não disponível na web');
         return;

@@ -12,7 +12,8 @@ import {
   Platform,
   Share,
 } from 'react-native';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Customer, CalendarEvent } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -32,6 +33,8 @@ import { ptBR } from 'date-fns/locale';
 const EVENT_COLORS = ['#C9A96E', '#8B6914', '#00B341', '#0070F3', '#FF9500', '#F31260'];
 
 export default function AgendaScreen() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -387,7 +390,7 @@ export default function AgendaScreen() {
         if (showDate) setSelectedDate(new Date(ev.date + 'T00:00:00'));
         openEdit(ev);
       }}>
-      <View style={[styles.eventBar, { backgroundColor: ev.color || colors.primary.main }]} />
+      <View style={[styles.eventBar, { backgroundColor: ev.color || themeColors.primary.main }]} />
       <View style={[styles.eventBody, { flexDirection: 'row' }]}>
         <View style={{ flex: 1 }}>
           <Text style={styles.eventTitle}>{ev.title}</Text>
@@ -406,7 +409,7 @@ export default function AgendaScreen() {
           onPress={() => handleDeleteEvento(ev.id)}
           style={{ padding: 4, alignSelf: 'flex-start' }}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-          <Ionicons name="trash-outline" size={18} color={colors.error} />
+          <Ionicons name="trash-outline" size={18} color={themeColors.error} />
         </TouchableOpacity>
       </View>
     </TouchableOpacity>
@@ -421,12 +424,12 @@ export default function AgendaScreen() {
           <TouchableOpacity
             style={[styles.viewBtn, !showList && styles.viewBtnActive]}
             onPress={() => setShowList(false)}>
-            <Ionicons name="calendar" size={18} color={!showList ? colors.white : colors.text.secondary} />
+            <Ionicons name="calendar" size={18} color={!showList ? themeColors.white : themeColors.text.secondary} />
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.viewBtn, showList && styles.viewBtnActive]}
             onPress={() => setShowList(true)}>
-            <Ionicons name="list" size={18} color={showList ? colors.white : colors.text.secondary} />
+            <Ionicons name="list" size={18} color={showList ? themeColors.white : themeColors.text.secondary} />
           </TouchableOpacity>
         </View>
       </View>
@@ -466,13 +469,13 @@ export default function AgendaScreen() {
               {/* Month Navigation */}
               <View style={styles.monthNav}>
                 <TouchableOpacity onPress={() => setCurrentMonth(subMonths(currentMonth, 1))} style={styles.navBtn}>
-                  <Ionicons name="chevron-back" size={20} color={colors.text.primary} />
+                  <Ionicons name="chevron-back" size={20} color={themeColors.text.primary} />
                 </TouchableOpacity>
                 <Text style={styles.monthLabel}>
                   {format(currentMonth, 'MMMM yyyy', { locale: ptBR })}
                 </Text>
                 <TouchableOpacity onPress={() => setCurrentMonth(addMonths(currentMonth, 1))} style={styles.navBtn}>
-                  <Ionicons name="chevron-forward" size={20} color={colors.text.primary} />
+                  <Ionicons name="chevron-forward" size={20} color={themeColors.text.primary} />
                 </TouchableOpacity>
               </View>
 
@@ -511,7 +514,7 @@ export default function AgendaScreen() {
                       {dayEvts.length > 0 && (
                         <View style={styles.dots}>
                           {dayEvts.slice(0, 3).map((e, i) => (
-                            <View key={i} style={[styles.dot, { backgroundColor: e.color || colors.primary.main }]} />
+                            <View key={i} style={[styles.dot, { backgroundColor: e.color || themeColors.primary.main }]} />
                           ))}
                         </View>
                       )}
@@ -527,7 +530,7 @@ export default function AgendaScreen() {
                     {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
                   </Text>
                   <TouchableOpacity style={styles.addBtn} onPress={openAdd}>
-                    <Ionicons name="add" size={16} color={colors.white} />
+                    <Ionicons name="add" size={16} color={themeColors.white} />
                     <Text style={styles.addBtnText}>Visitar</Text>
                   </TouchableOpacity>
                 </View>
@@ -557,7 +560,7 @@ export default function AgendaScreen() {
                     key={item.id}
                     style={styles.eventCard}
                     onPress={() => router.push(`/order/${item.id}`)}>
-                    <View style={[styles.eventBar, { backgroundColor: colors.primary.main }]} />
+                    <View style={[styles.eventBar, { backgroundColor: themeColors.primary.main }]} />
                     <View style={styles.eventBody}>
                       <Text style={styles.eventTitle}>{item.customer?.name || 'Sem cliente'}</Text>
                       <Text style={styles.eventCustomer}>Pedido Nº {item.number}</Text>
@@ -566,7 +569,7 @@ export default function AgendaScreen() {
                       </Text>
                       <Text style={[
                         styles.eventDesc,
-                        { color: diasRestantes < 0 ? colors.error : colors.primary.dark, fontWeight: '600' },
+                        { color: diasRestantes < 0 ? themeColors.error : themeColors.primary.dark, fontWeight: '600' },
                       ]}>
                         {diasRestantes === 0
                           ? 'Entrega hoje'
@@ -587,7 +590,7 @@ export default function AgendaScreen() {
             <View style={styles.comprasHeader}>
               <Text style={styles.sectionTitle}>Lista de Compras</Text>
               <TouchableOpacity style={styles.compartilharBtn} onPress={handleCompartilharCompras}>
-                <Ionicons name="share-outline" size={18} color={colors.white} />
+                <Ionicons name="share-outline" size={18} color={themeColors.white} />
                 <Text style={styles.compartilharBtnText}>Compartilhar</Text>
               </TouchableOpacity>
             </View>
@@ -608,12 +611,12 @@ export default function AgendaScreen() {
                     onPress={() => removerItemCompras(item)}
                     style={{ padding: 4, marginRight: 8 }}
                     hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
-                    <Ionicons name="trash-outline" size={18} color={colors.error} />
+                    <Ionicons name="trash-outline" size={18} color={themeColors.error} />
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[styles.compraCheckbox, item.comprado && styles.compraCheckboxChecked]}
                     onPress={() => toggleCompra(item)}>
-                    {item.comprado && <Ionicons name="checkmark" size={18} color={colors.white} />}
+                    {item.comprado && <Ionicons name="checkmark" size={18} color={themeColors.white} />}
                   </TouchableOpacity>
                 </View>
               ))
@@ -631,7 +634,7 @@ export default function AgendaScreen() {
                 {editingEvent ? 'Editar Evento' : 'Novo Evento'}
               </Text>
               <TouchableOpacity onPress={() => { setModalVisible(false); resetForm(); }}>
-                <Ionicons name="close" size={24} color={colors.text.primary} />
+                <Ionicons name="close" size={24} color={themeColors.text.primary} />
               </TouchableOpacity>
             </View>
 
@@ -649,7 +652,7 @@ export default function AgendaScreen() {
                 placeholder="Título *"
                 value={title}
                 onChangeText={setTitle}
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
               />
 
               <TextInput
@@ -657,7 +660,7 @@ export default function AgendaScreen() {
                 placeholder="Hora (ex: 14:30)"
                 value={eventTime}
                 onChangeText={setEventTime}
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
               />
 
               <Text style={styles.fieldLabel}>Cliente (opcional)</Text>
@@ -681,7 +684,7 @@ export default function AgendaScreen() {
                 onChangeText={setDescription}
                 multiline
                 numberOfLines={3}
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
               />
 
               <Text style={styles.fieldLabel}>Cor</Text>
@@ -718,7 +721,7 @@ export default function AgendaScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.background },
   header: {
     flexDirection: 'row',

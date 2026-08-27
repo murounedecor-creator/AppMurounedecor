@@ -13,7 +13,8 @@ import {
   Platform,
   Switch,
 } from 'react-native';
-import { colors } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { supabase, Customer, Product } from '@/lib/supabase';
 import { scheduleOrderReminder, cancelOrderReminder } from '@/lib/notifications';
@@ -149,6 +150,8 @@ const formatarMetragem = (valor: number | undefined | null): string => {
 };
 
 export default function NewOrderScreen() {
+  const { themeColors } = useTheme();
+  const styles = getStyles(themeColors);
   const router = useRouter();
   const params = useLocalSearchParams();
   const insets = useSafeAreaInsets();
@@ -1197,7 +1200,7 @@ export default function NewOrderScreen() {
       const { uri } = await Print.printToFileAsync({ html: htmlContent, base64: false });
 
       const nomeArquivo = `Orcamento-${orderNumber}.pdf`;
-      if (Platform.OS !== 'web') {
+      if (Sharing) {
         const { File, Paths } = require('expo-file-system');
         const sourceFile = new File(uri);
         const destFile = new File(Paths.document, nomeArquivo);
@@ -1225,7 +1228,7 @@ export default function NewOrderScreen() {
   if (loading) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={colors.primary.dark} />
+        <ActivityIndicator size="large" color={themeColors.primary.dark} />
       </View>
     );
   }
@@ -1240,7 +1243,7 @@ export default function NewOrderScreen() {
         {/* Header */}
         <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <TouchableOpacity onPress={() => router.back()}>
-            <Ionicons name="chevron-back" size={24} color={colors.white} />
+            <Ionicons name="chevron-back" size={24} color={themeColors.white} />
           </TouchableOpacity>
           <Text style={styles.title}>{editMode ? `Editar Pedido ${editOrderNumber}` : 'Novo Pedido'}</Text>
           <View />
@@ -1253,14 +1256,14 @@ export default function NewOrderScreen() {
             <View style={styles.selectedItem}>
               <Text style={styles.selectedItemText}>{selectedCustomer.name}</Text>
               <TouchableOpacity onPress={() => setCustomerSearchModal(true)}>
-                <Ionicons name="create" size={20} color={colors.primary.dark} />
+                <Ionicons name="create" size={20} color={themeColors.primary.dark} />
               </TouchableOpacity>
             </View>
           ) : (
             <TouchableOpacity
               style={styles.selectButton}
               onPress={() => setCustomerSearchModal(true)}>
-              <Ionicons name="person" size={20} color={colors.primary.dark} />
+              <Ionicons name="person" size={20} color={themeColors.primary.dark} />
               <Text style={styles.selectButtonText}>Selecionar Cliente</Text>
             </TouchableOpacity>
           )}
@@ -1293,7 +1296,7 @@ export default function NewOrderScreen() {
                 <TouchableOpacity
                   style={styles.dateButton}
                   onPress={() => setShowDatePicker(true)}>
-                  <Ionicons name="calendar" size={20} color={colors.primary.dark} />
+                  <Ionicons name="calendar" size={20} color={themeColors.primary.dark} />
                   <Text style={styles.dateButtonText}>
                     {format(orderDate, 'dd/MM/yyyy', { locale: ptBR })}
                   </Text>
@@ -1368,7 +1371,7 @@ export default function NewOrderScreen() {
                 <TouchableOpacity
                   style={styles.dateButton}
                   onPress={() => setShowPrazoPicker(true)}>
-                  <Ionicons name="calendar" size={20} color={colors.primary.dark} />
+                  <Ionicons name="calendar" size={20} color={themeColors.primary.dark} />
                   <Text style={styles.dateButtonText}>
                     {prazoEntrega
                       ? format(prazoEntrega, 'dd/MM/yyyy', { locale: ptBR })
@@ -1404,7 +1407,7 @@ export default function NewOrderScreen() {
                 setLembreteDiasAntes(n < 0 ? '0' : String(n));
               }}
               placeholder="1"
-              placeholderTextColor={colors.text.secondary}
+              placeholderTextColor={themeColors.text.secondary}
             />
           </View>
         </View>
@@ -1419,7 +1422,7 @@ export default function NewOrderScreen() {
                 resetFurnitureForm();
                 setFurnitureModal(true);
               }}>
-              <Ionicons name="add" size={20} color={colors.white} />
+              <Ionicons name="add" size={20} color={themeColors.white} />
               <Text style={styles.addButtonText}>Adicionar</Text>
             </TouchableOpacity>
           </View>
@@ -1430,10 +1433,10 @@ export default function NewOrderScreen() {
                 <Text style={styles.itemCardTitle}>{furniture.furnitureType}</Text>
                 <View style={styles.itemCardActions}>
                   <TouchableOpacity onPress={() => handleEditFurniture(furniture)}>
-                    <Ionicons name="pencil" size={18} color={colors.primary.dark} />
+                    <Ionicons name="pencil" size={18} color={themeColors.primary.dark} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDeleteFurniture(furniture.id)}>
-                    <Ionicons name="trash" size={18} color={colors.error} />
+                    <Ionicons name="trash" size={18} color={themeColors.error} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1455,7 +1458,7 @@ export default function NewOrderScreen() {
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setServiceModal(true)}>
-              <Ionicons name="add" size={20} color={colors.white} />
+              <Ionicons name="add" size={20} color={themeColors.white} />
             </TouchableOpacity>
           </View>
 
@@ -1473,7 +1476,7 @@ export default function NewOrderScreen() {
                     <Ionicons name="pencil-outline" size={18} color="#C9A96E" />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDeleteService(service.id)}>
-                    <Ionicons name="trash" size={18} color={colors.error} />
+                    <Ionicons name="trash" size={18} color={themeColors.error} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1490,7 +1493,7 @@ export default function NewOrderScreen() {
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setProductModal(true)}>
-              <Ionicons name="add" size={20} color={colors.white} />
+              <Ionicons name="add" size={20} color={themeColors.white} />
             </TouchableOpacity>
           </View>
 
@@ -1508,7 +1511,7 @@ export default function NewOrderScreen() {
                     <Ionicons name="pencil-outline" size={18} color="#C9A96E" />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDeleteProduct(product.id)}>
-                    <Ionicons name="trash" size={18} color={colors.error} />
+                    <Ionicons name="trash" size={18} color={themeColors.error} />
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1525,7 +1528,7 @@ export default function NewOrderScreen() {
             <TouchableOpacity
               style={styles.addButton}
               onPress={() => setExpenseModal(true)}>
-              <Ionicons name="add" size={20} color={colors.white} />
+              <Ionicons name="add" size={20} color={themeColors.white} />
             </TouchableOpacity>
           </View>
 
@@ -1540,7 +1543,7 @@ export default function NewOrderScreen() {
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => handleDeleteExpense(expense.id)}>
-                  <Ionicons name="trash" size={18} color={colors.error} />
+                  <Ionicons name="trash" size={18} color={themeColors.error} />
                 </TouchableOpacity>
               </View>
             </View>
@@ -1553,7 +1556,7 @@ export default function NewOrderScreen() {
           <TextInput
             style={styles.input}
             placeholder="Valor do frete"
-            placeholderTextColor={colors.text.disabled}
+            placeholderTextColor={themeColors.text.disabled}
             value={freight}
             onChangeText={setFreight}
             keyboardType="decimal-pad"
@@ -1596,7 +1599,7 @@ export default function NewOrderScreen() {
           <TextInput
             style={styles.input}
             placeholder={`Desconto ${discountType === 'percentage' ? '(%)' : '(R$)'}`}
-            placeholderTextColor={colors.text.disabled}
+            placeholderTextColor={themeColors.text.disabled}
             value={discountValue}
             onChangeText={setDiscountValue}
             keyboardType="decimal-pad"
@@ -1671,7 +1674,7 @@ export default function NewOrderScreen() {
           <TextInput
             style={[styles.input, styles.textarea]}
             placeholder="Observações do pedido"
-            placeholderTextColor={colors.text.disabled}
+            placeholderTextColor={themeColors.text.disabled}
             value={observations}
             onChangeText={setObservations}
             multiline
@@ -1713,11 +1716,11 @@ export default function NewOrderScreen() {
             style={[styles.button, styles.buttonSave]}
             onPress={() => handleSaveOrder()}
             disabled={saving}>
-            <Ionicons name="save" size={20} color={colors.white} />
+            <Ionicons name="save" size={20} color={themeColors.white} />
             <Text style={styles.buttonText}>{saving ? 'Salvando...' : 'Salvar Pedido'}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={[styles.button, styles.buttonPDF]} disabled={saving} onPress={handleGeneratePDF}>
-            <Ionicons name="document" size={20} color={colors.white} />
+            <Ionicons name="document" size={20} color={themeColors.white} />
             <Text style={styles.buttonText}>Enviar PDF</Text>
           </TouchableOpacity>
         </View>
@@ -1744,7 +1747,7 @@ export default function NewOrderScreen() {
             <TextInput
               style={styles.input}
               placeholder="Buscar cliente..."
-              placeholderTextColor={colors.text.disabled}
+              placeholderTextColor={themeColors.text.disabled}
               value={customerSearch}
               onChangeText={setCustomerSearch}
             />
@@ -1958,7 +1961,7 @@ export default function NewOrderScreen() {
                   <TextInput
                     style={styles.input}
                     placeholder="Informações adicionais"
-                    placeholderTextColor={colors.text.disabled}
+                    placeholderTextColor={themeColors.text.disabled}
                     value={currentFurniture.observations}
                     onChangeText={text =>
                       setCurrentFurniture(prev => ({
@@ -1976,7 +1979,7 @@ export default function NewOrderScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Quantidade"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={currentFurniture.quantityPieces ? currentFurniture.quantityPieces.toString() : ''}
                 onChangeText={text =>
                   setCurrentFurniture(prev => ({
@@ -1991,7 +1994,7 @@ export default function NewOrderScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Largura"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={currentFurniture.widthM}
                 onChangeText={text =>
                   setCurrentFurniture(prev => ({
@@ -2004,7 +2007,7 @@ export default function NewOrderScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Profundidade"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={currentFurniture.depthM}
                 onChangeText={text =>
                   setCurrentFurniture(prev => ({
@@ -2017,7 +2020,7 @@ export default function NewOrderScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Altura"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={currentFurniture.heightM}
                 onChangeText={text =>
                   setCurrentFurniture(prev => ({
@@ -2064,7 +2067,7 @@ export default function NewOrderScreen() {
                   <TextInput
                     style={[styles.input, styles.textarea]}
                     placeholder="Observações do móvel"
-                    placeholderTextColor={colors.text.disabled}
+                    placeholderTextColor={themeColors.text.disabled}
                     value={currentFurniture.observations}
                     onChangeText={text =>
                       setCurrentFurniture(prev => ({
@@ -2081,7 +2084,7 @@ export default function NewOrderScreen() {
               <TouchableOpacity
                 style={styles.buttonSecondary}
                 onPress={handleAddPhoto}>
-                <Ionicons name="camera" size={20} color={colors.white} />
+                <Ionicons name="camera" size={20} color={themeColors.white} />
                 <Text style={styles.buttonSecondaryText}>Tirar Foto</Text>
               </TouchableOpacity>
 
@@ -2136,8 +2139,8 @@ export default function NewOrderScreen() {
                   <Switch
                     value={serviceSaveToCatalog}
                     onValueChange={setServiceSaveToCatalog}
-                    trackColor={{ false: colors.border, true: colors.primary.light }}
-                    thumbColor={serviceSaveToCatalog ? colors.primary.dark : colors.text.secondary}
+                    trackColor={{ false: themeColors.border, true: themeColors.primary.light }}
+                    thumbColor={serviceSaveToCatalog ? themeColors.primary.dark : themeColors.text.secondary}
                   />
                 </View>
 
@@ -2161,7 +2164,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Nome do serviço"
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={currentService.name}
                   onChangeText={text =>
                     setCurrentService(prev => ({
@@ -2196,7 +2199,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="R$ 0,00"
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={currentService.value}
                   onChangeText={text =>
                     setCurrentService(prev => ({
@@ -2237,7 +2240,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Ex: 0,80"
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={currentService.quantity}
                   onChangeText={text => {
                     const cleaned = text.replace(/[^0-9.,]/g, '');
@@ -2258,7 +2261,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.searchInputCatalog}
                   placeholder="Buscar serviço..."
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={serviceSearchText}
                   onChangeText={setServiceSearchText}
                 />
@@ -2330,8 +2333,8 @@ export default function NewOrderScreen() {
                   <Switch
                     value={productSaveToCatalog}
                     onValueChange={setProductSaveToCatalog}
-                    trackColor={{ false: colors.border, true: colors.primary.light }}
-                    thumbColor={productSaveToCatalog ? colors.primary.dark : colors.text.secondary}
+                    trackColor={{ false: themeColors.border, true: themeColors.primary.light }}
+                    thumbColor={productSaveToCatalog ? themeColors.primary.dark : themeColors.text.secondary}
                   />
                 </View>
 
@@ -2339,7 +2342,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Nome do produto"
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={currentProduct.productName}
                   onChangeText={text =>
                     setCurrentProduct(prev => ({
@@ -2353,7 +2356,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="R$ 0,00"
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={currentProduct.pricePerMeter}
                   onChangeText={text =>
                     setCurrentProduct(prev => ({
@@ -2368,7 +2371,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="R$ 0,00"
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={currentProduct.valorCusto}
                   onChangeText={text =>
                     setCurrentProduct(prev => ({
@@ -2409,7 +2412,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.input}
                   placeholder="Ex: 0,80"
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={currentProduct.quantity}
                   onChangeText={text => {
                     const cleaned = text.replace(/[^0-9.,]/g, '');
@@ -2430,7 +2433,7 @@ export default function NewOrderScreen() {
                 <TextInput
                   style={styles.searchInputCatalog}
                   placeholder="Buscar produto..."
-                  placeholderTextColor={colors.text.disabled}
+                  placeholderTextColor={themeColors.text.disabled}
                   value={productSearchText}
                   onChangeText={setProductSearchText}
                 />
@@ -2481,7 +2484,7 @@ export default function NewOrderScreen() {
               <TextInput
                 style={styles.input}
                 placeholder="Valor"
-                placeholderTextColor={colors.text.disabled}
+                placeholderTextColor={themeColors.text.disabled}
                 value={currentExpense.value}
                 onChangeText={text =>
                   setCurrentExpense(prev => ({
@@ -2509,7 +2512,7 @@ export default function NewOrderScreen() {
                         name: cat.label,
                       }))
                     }>
-                    <Ionicons name={cat.icon as any} size={20} color={currentExpense.category === cat.value ? colors.white : colors.primary.dark} />
+                    <Ionicons name={cat.icon as any} size={20} color={currentExpense.category === cat.value ? themeColors.white : themeColors.primary.dark} />
                     <Text style={[styles.categoryButtonText, currentExpense.category === cat.value && styles.categoryButtonTextActive]}>{cat.label}</Text>
                   </TouchableOpacity>
                 ))}
@@ -2530,7 +2533,7 @@ export default function NewOrderScreen() {
                       currentExpense.isPaid && styles.checkboxActive,
                     ]}>
                     {currentExpense.isPaid && (
-                      <Ionicons name="checkmark" size={16} color={colors.white} />
+                      <Ionicons name="checkmark" size={16} color={themeColors.white} />
                     )}
                   </View>
                   <Text style={styles.toggleLabel}>Pago</Text>
@@ -2550,7 +2553,7 @@ export default function NewOrderScreen() {
                       currentExpense.isChargeable && styles.checkboxActive,
                     ]}>
                     {currentExpense.isChargeable && (
-                      <Ionicons name="checkmark" size={16} color={colors.white} />
+                      <Ionicons name="checkmark" size={16} color={themeColors.white} />
                     )}
                   </View>
                   <Text style={styles.toggleLabel}>Cobrável</Text>
@@ -2579,7 +2582,7 @@ export default function NewOrderScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

@@ -525,8 +525,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     gap: 8,
   },
   unitButton: {
-    flex: 1,
-    flexShrink: 1,
     minWidth: '45%',
     paddingVertical: 10,
     paddingHorizontal: 8,
