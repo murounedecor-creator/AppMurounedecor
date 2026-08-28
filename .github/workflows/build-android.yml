@@ -3,6 +3,10 @@ name: Build Android APK (sem EAS)
 on:
   workflow_dispatch:
 
+concurrency:
+  group: build-android-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -22,11 +26,14 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
+      - name: Configurar cache do Gradle
+        uses: gradle/actions/setup-gradle@v4
+
       - name: Configurar Android SDK
         uses: android-actions/setup-android@v3
 
       - name: Instalar dependências
-        run: npm install
+        run: npm ci
 
       - name: Criar .env com variáveis do Supabase
         run: |
@@ -53,7 +60,7 @@ jobs:
 
       - name: Buildar APK release
         working-directory: android
-        run: ./gradlew assembleRelease
+        run: ./gradlew assembleRelease --parallel --build-cache
 
       - name: Enviar APK como artifact
         uses: actions/upload-artifact@v4
