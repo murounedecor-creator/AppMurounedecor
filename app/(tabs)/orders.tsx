@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  ScrollView,
   Alert,
 } from 'react-native';
 import { lightColors } from '@/constants/colors';
@@ -17,8 +16,9 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { format, subDays, parseISO } from 'date-fns';
+import { format, parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useOrderFilters } from '@/contexts/OrderFiltersContext';
 
 type Order = {
   id: string;
@@ -39,26 +39,19 @@ export default function OrdersScreen() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filtered, setFiltered] = useState<Order[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [activeFilter, setActiveFilter] = useState('all');
   const [loading, setLoading] = useState(false);
-
-  const filters = [
-    { id: 'all', label: 'Todos' },
-    { id: 'last', label: 'Últimos' },
-    { id: '30days', label: '30 dias' },
-    { id: '60days', label: '60 dias' },
-    { id: 'completed', label: 'Concluídos' },
-  ];
+  const { periodPreset, getDateRange, selectedStatuses, lastOrdersCount, toggleStatus } =
+    useOrderFilters();
 
   useEffect(() => {
     if (params.filtroStatus) {
-      setActiveFilter(params.filtroStatus as string);
+      toggleStatus(params.filtroStatus as string);
     }
   }, [params.filtroStatus]);
 
   useEffect(() => {
     applyFilters();
-  }, [searchText, activeFilter, orders]);
+  }, [searchText, orders, periodPreset, selectedStatuses, lastOrdersCount]);
 
   const loadOrders = useCallback(async () => {
     setLoading(true);
@@ -103,31 +96,31 @@ export default function OrdersScreen() {
       );
     }
 
+    // Filtro de status (multi-seleção — vazio significa "todos")
+    if (selectedStatuses.length > 0) {
+      result = result.filter(o => selectedStatuses.includes(o.status));
+    }
+
     // Filtro de período
-    const today = new Date();
-    switch (activeFilter) {
-      case 'last':
-        result = result.slice(0, 10);
-        break;
-      case '30days':
-        result = result.filter(
-          o =>
-            parseISO(o.order_date) >= subDays(today, 30)
-        );
-        break;
-      case '60days':
-        result = result.filter(
-          o =>
-            parseISO(o.order_date) >= subDays(today, 60)
-        );
-        break;
-      case 'completed':
-      case 'pending':
-      case 'waiting_payment':
-      case 'in_progress':
-      case 'cancelled':
-        result = result.filter(o => o.status === activeFilter);
-        break;
+    if (periodPreset === 'ultimos_pedidos') {
+      result = result.slice(0, lastOrdersCount);
+    } else {
+      const range = getDateRange();
+      if (range) {
+        result = result.filter(o => {
+          const orderDate = parseISO(o.order_date);
+          if (range.start && range.end) {
+            return isWithinInterval(orderDate, {
+              start: startOfDay(range.start),
+              end: endOfDay(range.end),
+            });
+          }
+          if (range.start && !range.end) {
+            return orderDate >= startOfDay(range.start);
+          }
+          return true;
+        });
+      }
     }
 
     setFiltered(result);
@@ -211,67 +204,18 @@ export default function OrdersScreen() {
         />
       </View>
 
-      {/* Filtros */}
-      <View style={styles.filterWrapper}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filterScroll}
-          style={styles.filterContainer}>
-          {filters.map(filter => (
-            <TouchableOpacity
-              key={filter.id}
-              style={[
-                styles.filterButton,
-                activeFilter === filter.id && styles.filterButtonActive,
-              ]}
-              onPress={() => setActiveFilter(filter.id)}>
-              <Text
-                maxFontSizeMultiplier={1.2}
-                style={[
-                  styles.filterButtonText,
-                  activeFilter === filter.id && styles.filterButtonTextActive,
-              ]}>
-                {filter.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-
-      {/* Filtro de Status */}
-      <View style={styles.statusFilterWrapper}>
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.statusFilterScroll}
-          style={styles.statusFilterContainer}>
-          {[
-            { id: 'pending', label: 'Pendente' },
-            { id: 'waiting_payment', label: 'Aguardando Pagamento' },
-            { id: 'in_progress', label: 'Em Andamento' },
-            { id: 'completed', label: 'Concluído' },
-            { id: 'cancelled', label: 'Cancelado' },
-          ].map(status => (
-            <TouchableOpacity
-              key={status.id}
-              style={[
-                styles.filterButton,
-                activeFilter === status.id && styles.filterButtonActive,
-              ]}
-              onPress={() => setActiveFilter(status.id)}>
-              <Text
-                maxFontSizeMultiplier={1.2}
-                style={[
-                  styles.filterButtonText,
-                  activeFilter === status.id && styles.filterButtonTextActive,
-                ]}>
-                {status.label}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
+      {/* Botão único de Filtro */}
+      <TouchableOpacity
+        style={styles.filterTriggerButton}
+        onPress={() => router.push('/order-filters')}>
+        <Ionicons name="filter" size={18} color={themeColors.primary.dark} />
+        <Text style={styles.filterTriggerText}>Filtro</Text>
+        {selectedStatuses.length > 0 && (
+          <View style={styles.filterBadge}>
+            <Text style={styles.filterBadgeText}>{selectedStatuses.length}</Text>
+          </View>
+        )}
+      </TouchableOpacity>
 
       {/* Lista de Pedidos */}
       <FlatList
@@ -419,6 +363,39 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   },
   filterButtonTextActive: {
     color: colors.white,
+  },
+  filterTriggerButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginHorizontal: 20,
+    marginBottom: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
+    alignSelf: 'flex-start',
+  },
+  filterTriggerText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text.primary,
+  },
+  filterBadge: {
+    backgroundColor: colors.primary.dark,
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 4,
+  },
+  filterBadgeText: {
+    color: colors.white,
+    fontSize: 11,
+    fontWeight: '700',
   },
   listContent: {
     paddingHorizontal: 20,
