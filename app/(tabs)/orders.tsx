@@ -6,12 +6,10 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
-  Alert,
 } from 'react-native';
 import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabase';
-import { deleteOrderCascade } from '@/lib/orders';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useFocusEffect } from '@react-navigation/native';
@@ -162,29 +160,7 @@ export default function OrdersScreen() {
     }
   };
 
-  const handleDeleteOrder = (orderId: string) => {
-    Alert.alert(
-      'Excluir Pedido',
-      'Tem certeza que deseja excluir este pedido?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await deleteOrderCascade(orderId);
-              setOrders(prev => prev.filter(o => o.id !== orderId));
-              Alert.alert('Sucesso', 'Pedido excluído com sucesso!');
-            } catch (error) {
-              console.error('Erro ao excluir pedido:', error);
-              Alert.alert('Erro', 'Não foi possível excluir o pedido.');
-            }
-          }
-        }
-      ]
-    );
-  };
+
 
   return (
     <View style={styles.container}>
@@ -246,21 +222,6 @@ export default function OrdersScreen() {
               <Text style={styles.totalText}>
                 R$ {item.total?.toFixed(2).replace('.', ',') || '0,00'}
               </Text>
-            </View>
-
-            <View style={styles.orderActions}>
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => router.push(`/new-order?pedidoId=${item.id}&modo=edicao`)}>
-                <Ionicons name="pencil-outline" size={16} color="#C9A96E" />
-                <Text style={styles.actionBtnEditText}>Editar</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.actionBtn}
-                onPress={() => handleDeleteOrder(item.id)}>
-                <Ionicons name="trash-outline" size={16} color="#FF4444" />
-                <Text style={styles.actionBtnDeleteText}>Excluir</Text>
-              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
@@ -450,30 +411,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.primary.dark,
-  },
-  orderActions: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    gap: 16,
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.border,
-  },
-  actionBtn: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  actionBtnEditText: {
-    color: '#C9A96E',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  actionBtnDeleteText: {
-    color: '#FF4444',
-    fontSize: 14,
-    fontWeight: '600',
   },
   emptyText: {
     textAlign: 'center',

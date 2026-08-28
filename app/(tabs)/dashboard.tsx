@@ -330,7 +330,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     justifyContent: 'flex-start',
   },
   weekdayHeader: {
-    width: 40,
+    width: '14.28%',
     height: 32,
     textAlign: 'center',
     fontSize: 11,
@@ -340,9 +340,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     lineHeight: 32,
   },
   dayCell: {
-    width: 40,
+    width: '14.28%',
     height: 40,
-    minWidth: 40,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 6,
