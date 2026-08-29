@@ -110,6 +110,7 @@ const getStyles = (colors: typeof lightColors) =>
       fontSize: 18,
       fontWeight: '700',
       color: colors.text.primary,
+      fontFamily: 'Fraunces-Bold',
     },
     hintBox: {
       flexDirection: 'row',
@@ -154,5 +155,6 @@ const getStyles = (colors: typeof lightColors) =>
       fontSize: 10,
       fontWeight: '700',
       color: colors.text.secondary,
+      fontFamily: 'WorkSans-Bold',
     },
   });

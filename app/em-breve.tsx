@@ -41,10 +41,12 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'Fraunces-SemiBold',
   },
   subtitle: {
     fontSize: 14,
     color: colors.text.secondary,
     textAlign: 'center',
+    fontFamily: 'WorkSans-Regular',
   },
 });

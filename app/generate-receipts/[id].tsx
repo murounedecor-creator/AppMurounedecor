@@ -10,6 +10,7 @@ import {
   Switch,
 } from 'react-native';
 import { colors } from '@/constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -235,13 +236,17 @@ export default function GenerateReceiptsScreen() {
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <LinearGradient
+          colors={[colors.primary.light, colors.primary.main]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={24} color={colors.white} />
           </TouchableOpacity>
           <Text style={styles.title}>Gerar Recebimentos</Text>
           <View />
-        </View>
+        </LinearGradient>
 
         {/* Order Info */}
         <View style={styles.section}>
@@ -425,12 +430,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: 18,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   section: {
     marginHorizontal: 20,
@@ -441,6 +451,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     marginBottom: 10,
+    fontFamily: 'Fraunces-Bold',
   },
   infoCard: {
     backgroundColor: colors.surface,
@@ -462,16 +473,19 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   value: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   valueHighlight: {
     fontSize: 14,
     fontWeight: '700',
     color: colors.primary.dark,
+    fontFamily: 'Fraunces-Bold',
   },
   toggleRow: {
     flexDirection: 'row',
@@ -488,6 +502,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 4,
+    fontFamily: 'WorkSans-Regular',
   },
   switch: {
     marginLeft: 10,
@@ -519,6 +534,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flexShrink: 1,
     flexWrap: 'wrap',
+    fontFamily: 'WorkSans-SemiBold',
   },
   paymentTypeButtonTextActive: {
     color: colors.white,
@@ -541,15 +557,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Bold',
   },
   scheduleValue: {
     fontSize: 14,
     fontWeight: '700',
     color: colors.primary.dark,
+    fontFamily: 'Fraunces-Bold',
   },
   scheduleDescription: {
     fontSize: 12,
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-Regular',
   },
   totalCard: {
     backgroundColor: colors.primary.main,
@@ -562,11 +581,13 @@ const styles = StyleSheet.create({
     color: colors.white,
     fontWeight: '600',
     marginBottom: 4,
+    fontFamily: 'WorkSans-SemiBold',
   },
   totalValue: {
     fontSize: 24,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   actionButtons: {
     flexDirection: 'row',
@@ -598,9 +619,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   emptyText: {
     fontSize: 16,
     color: colors.text.disabled,
+    fontFamily: 'WorkSans-Regular',
   },
 });

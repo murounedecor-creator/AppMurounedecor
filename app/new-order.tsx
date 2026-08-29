@@ -13,6 +13,7 @@ import {
   Platform,
   Switch,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -1241,13 +1242,17 @@ export default function NewOrderScreen() {
         enableOnAndroid
         extraScrollHeight={20}>
         {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <LinearGradient
+          colors={[themeColors.primary.light, themeColors.primary.main]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={24} color={themeColors.white} />
           </TouchableOpacity>
           <Text style={styles.title}>{editMode ? `Editar Pedido ${editOrderNumber}` : 'Novo Pedido'}</Text>
           <View />
-        </View>
+        </LinearGradient>
 
         {/* CUSTOMER SECTION */}
         <View style={styles.section}>
@@ -2599,12 +2604,17 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: 24,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   section: {
     marginHorizontal: 20,
@@ -2643,6 +2653,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.text.primary,
     flexShrink: 1,
     flexWrap: 'wrap',
+    fontFamily: 'WorkSans-SemiBold',
   },
   paymentTypeBtnTextActive: {
     color: colors.white,
@@ -2657,6 +2668,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'Fraunces-Bold',
   },
   addButton: {
     flexDirection: 'row',
@@ -2671,6 +2683,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.white,
+    fontFamily: 'WorkSans-SemiBold',
   },
   selectButton: {
     flexDirection: 'row',
@@ -2685,6 +2698,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   selectButtonText: {
     fontSize: 14,
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-Regular',
   },
   selectedItem: {
     flexDirection: 'row',
@@ -2698,6 +2712,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   row: {
     flexDirection: 'row',
@@ -2720,6 +2735,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     color: colors.text.primary,
     fontWeight: '600',
+    fontFamily: 'WorkSans-SemiBold',
   },
   statusButtonGroup: {
     flexDirection: 'row',
@@ -2743,6 +2759,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 12,
     fontWeight: '700',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-Bold',
   },
   statusSmallButtonTextActive: {
     color: colors.white,
@@ -2765,6 +2782,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Bold',
   },
   itemCardActions: {
     flexDirection: 'row',
@@ -2774,6 +2792,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 4,
+    fontFamily: 'WorkSans-Regular',
   },
   subtotal: {
     fontSize: 14,
@@ -2781,6 +2800,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.primary.dark,
     marginTop: 8,
     textAlign: 'right',
+    fontFamily: 'WorkSans-SemiBold',
   },
   discountTypeButtons: {
     flexDirection: 'row',
@@ -2805,6 +2825,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-Bold',
   },
   discountTypeButtonTextActive: {
     color: colors.white,
@@ -2849,21 +2870,25 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   totalLabelHighlight: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   totalValue: {
     fontSize: 14,
     fontWeight: '700',
     color: colors.primary.dark,
+    fontFamily: 'Fraunces-Bold',
   },
   totalValueHighlight: {
     fontSize: 18,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   actionButtons: {
     flexDirection: 'row',
@@ -2892,6 +2917,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   calcResultCard: {
     backgroundColor: colors.primary.light,
@@ -2907,11 +2933,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.text.secondary,
     fontWeight: '500',
     marginBottom: 4,
+    fontFamily: 'WorkSans-Medium',
   },
   calcResultValue: {
     fontSize: 22,
     fontWeight: '700',
     color: colors.primary.dark,
+    fontFamily: 'Fraunces-Bold',
   },
   buttonSecondary: {
     flexDirection: 'row',
@@ -2929,6 +2957,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.white,
+    fontFamily: 'WorkSans-SemiBold',
   },
   input: {
     paddingVertical: 12,
@@ -2940,6 +2969,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   textarea: {
     minHeight: 100,
@@ -2951,6 +2981,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.text.primary,
     marginTop: 12,
     marginBottom: 8,
+    fontFamily: 'WorkSans-SemiBold',
   },
   furnitureTypeButtons: {
     flexDirection: 'row',
@@ -2977,6 +3008,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '600',
     color: colors.text.secondary,
     textAlign: 'center',
+    fontFamily: 'WorkSans-SemiBold',
   },
   furnitureTypeButtonTextActive: {
     color: colors.white,
@@ -3003,6 +3035,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   toggleButtonTextActive: {
     color: colors.white,
@@ -3036,6 +3069,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#5C3D1E',
+    fontFamily: 'WorkSans-SemiBold',
   },
   placeButtonTextActive: {
     color: colors.white,
@@ -3058,6 +3092,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   quantityButtonTextActive: {
     color: colors.white,
@@ -3087,6 +3122,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '600',
     color: colors.text.primary,
     textAlign: 'center',
+    fontFamily: 'WorkSans-SemiBold',
   },
   categoryButtonTextActive: {
     color: colors.white,
@@ -3119,6 +3155,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   modalContainer: {
     flex: 1,
@@ -3143,11 +3180,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 24,
     color: colors.text.primary,
     fontWeight: '700',
+    fontFamily: 'WorkSans-Bold',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'Fraunces-Bold',
   },
   modalForm: {
     paddingHorizontal: 20,
@@ -3163,11 +3202,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   modalOptionDetail: {
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 4,
+    fontFamily: 'WorkSans-Regular',
   },
   // New styles
   tabContainer: {
@@ -3193,6 +3234,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   tabTextActive: {
     color: colors.white,
@@ -3224,6 +3266,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.primary.dark,
+    fontFamily: 'WorkSans-SemiBold',
   },
   unitButtonTextActive: {
     color: colors.white,
@@ -3239,6 +3282,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.white,
     fontSize: 16,
     fontWeight: '700',
+    fontFamily: 'WorkSans-Bold',
   },
   catalogList: {
     paddingHorizontal: 20,
@@ -3256,17 +3300,20 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Bold',
   },
   catalogItemDetail: {
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 4,
+    fontFamily: 'WorkSans-Regular',
   },
   emptyCatalogText: {
     fontSize: 14,
     color: colors.text.disabled,
     textAlign: 'center',
     paddingVertical: 40,
+    fontFamily: 'WorkSans-Regular',
   },
   searchInputCatalog: {
     borderWidth: 1,
@@ -3278,6 +3325,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     color: colors.text.primary,
     backgroundColor: colors.surface,
+    fontFamily: 'WorkSans-Regular',
   },
   conditionGrid: {
     marginTop: 8,
@@ -3304,6 +3352,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.primary.dark,
     flexShrink: 1,
     flexWrap: 'wrap',
+    fontFamily: 'WorkSans-SemiBold',
   },
   conditionBtnTextActive: {
     color: colors.white,

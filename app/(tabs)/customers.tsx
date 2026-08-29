@@ -13,6 +13,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Customer } from '@/lib/supabase';
@@ -515,9 +516,13 @@ export default function CustomersScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <LinearGradient
+        colors={[themeColors.primary.light, themeColors.primary.main]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Text style={styles.title}>Clientes</Text>
-      </View>
+      </LinearGradient>
 
       {/* Abas */}
       <View style={styles.tabBar}>
@@ -609,7 +614,13 @@ export default function CustomersScreen() {
           <TouchableOpacity
             style={styles.fab}
             onPress={() => handleOpenModal()}>
-            <Ionicons name="add" size={28} color={themeColors.white} />
+            <LinearGradient
+              colors={[themeColors.primary.main, themeColors.primary.dark]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.fabGradient}>
+              <Ionicons name="add" size={28} color={themeColors.white} />
+            </LinearGradient>
           </TouchableOpacity>
         </>
       ) : (
@@ -636,8 +647,14 @@ export default function CustomersScreen() {
             <TouchableOpacity
               style={styles.fabVisitas}
               onPress={() => setModalVisitas(true)}>
-              <Ionicons name="add" size={28} color="#FFFFFF" />
-              <Text style={styles.fabVisitasText}>Adicionar Cliente</Text>
+              <LinearGradient
+                colors={[themeColors.primary.main, themeColors.primary.dark]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.fabVisitasGradient}>
+                <Ionicons name="add" size={28} color="#FFFFFF" />
+                <Text style={styles.fabVisitasText}>Adicionar Cliente</Text>
+              </LinearGradient>
             </TouchableOpacity>
           )}
 
@@ -885,12 +902,17 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   // ===== Abas =====
   tabBar: {
@@ -912,11 +934,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   tabText: {
     color: '#5C3D1E',
     fontSize: 15,
+    fontFamily: 'WorkSans-Regular',
   },
   tabTextActive: {
     color: '#C9A96E',
     fontSize: 15,
     fontWeight: 'bold',
+    fontFamily: 'WorkSans-Bold',
   },
   // ===== Clientes (existente) =====
   searchContainer: {
@@ -938,6 +962,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   listContent: {
     paddingHorizontal: 20,
@@ -972,6 +997,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   details: {
     flex: 1,
@@ -980,11 +1006,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Bold',
   },
   detail: {
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 2,
+    fontFamily: 'WorkSans-Regular',
   },
   actions: {
     flexDirection: 'row',
@@ -998,6 +1026,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     marginTop: 40,
     fontSize: 16,
     color: colors.text.disabled,
+    fontFamily: 'WorkSans-Regular',
   },
   fab: {
     position: 'absolute',
@@ -1006,7 +1035,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary.main,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
@@ -1016,6 +1044,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     shadowRadius: 4,
     zIndex: 999,
     opacity: 1,
+    overflow: 'hidden',
+  },
+  fabGradient: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContainer: {
     flex: 1,
@@ -1040,11 +1075,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 24,
     color: colors.text.primary,
     fontWeight: '700',
+    fontFamily: 'WorkSans-Bold',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'Fraunces-Bold',
   },
   formContainer: {
     paddingHorizontal: 20,
@@ -1066,6 +1103,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   textarea: {
     minHeight: 100,
@@ -1087,6 +1125,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   // ===== Visitas do Dia =====
   visitasScroll: {
@@ -1108,12 +1147,14 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: 'bold',
     color: '#5C3D1E',
     marginTop: 12,
+    fontFamily: 'Fraunces-Bold',
   },
   visitasEmptyText: {
     fontSize: 14,
     color: '#888',
     textAlign: 'center',
     maxWidth: '100%',
+    fontFamily: 'WorkSans-Regular',
   },
   visitaCard: {
     flexDirection: 'row',
@@ -1141,6 +1182,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: '#FFF',
     fontWeight: 'bold',
     fontSize: 13,
+    fontFamily: 'WorkSans-Bold',
   },
   visitaInfo: {
     flex: 1,
@@ -1149,11 +1191,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: 'bold',
     color: '#5C3D1E',
     fontSize: 15,
+    fontFamily: 'WorkSans-Bold',
   },
   visitaDetalhe: {
     color: '#888',
     fontSize: 12,
     marginTop: 2,
+    fontFamily: 'WorkSans-Regular',
   },
   visitaAcoes: {
     alignItems: 'center',
@@ -1163,24 +1207,27 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     position: 'absolute',
     bottom: 200,
     right: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#C9A96E',
     borderRadius: 28,
-    paddingVertical: 14,
-    paddingHorizontal: 18,
     elevation: 6,
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 4,
     zIndex: 999,
+    overflow: 'hidden',
+  },
+  fabVisitasGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingVertical: 14,
+    paddingHorizontal: 18,
   },
   fabVisitasText: {
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 14,
+    fontFamily: 'WorkSans-Bold',
   },
   visitasFooter: {
     position: 'absolute',
@@ -1198,6 +1245,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     textAlign: 'center',
     color: '#888',
     fontSize: 13,
+    fontFamily: 'WorkSans-Regular',
   },
   visitasBtnRota: {
     backgroundColor: '#C9A96E',
@@ -1212,6 +1260,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: '#FFF',
     fontWeight: 'bold',
     fontSize: 16,
+    fontFamily: 'WorkSans-Bold',
   },
   visitasBtnLimpar: {
     borderWidth: 1,
@@ -1223,6 +1272,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   visitasBtnLimparText: {
     color: '#FF4444',
     fontSize: 14,
+    fontFamily: 'WorkSans-Regular',
   },
   // Modal selecionar cliente
   visitaSelectCard: {
@@ -1246,6 +1296,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: '#FF4444',
     marginTop: 2,
     fontWeight: '600',
+    fontFamily: 'WorkSans-SemiBold',
   },
   confirmarSelecaoBtn: {
     backgroundColor: '#C9A96E',
@@ -1258,5 +1309,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: '#FFFFFF',
     fontWeight: 'bold',
     fontSize: 16,
+    fontFamily: 'WorkSans-Bold',
   },
 });

@@ -53,8 +53,8 @@ export default function TestContactsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.white },
-  title: { fontSize: 20, fontWeight: '700', color: colors.primary.dark, marginBottom: 8 },
-  subtitle: { fontSize: 13, color: colors.text.secondary, marginBottom: 20 },
+  title: { fontSize: 20, fontWeight: '700', color: colors.primary.dark, marginBottom: 8, fontFamily: 'Fraunces-Bold' },
+  subtitle: { fontSize: 13, color: colors.text.secondary, marginBottom: 20, fontFamily: 'WorkSans-Regular' },
   button: {
     backgroundColor: colors.primary.main,
     borderRadius: 8,
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  buttonText: { color: colors.white, fontSize: 16, fontWeight: '700' },
-  status: { fontSize: 14, color: colors.text.primary, marginTop: 8 },
-  count: { fontSize: 14, fontWeight: '600', color: colors.primary.dark, marginTop: 8 },
+  buttonText: { color: colors.white, fontSize: 16, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
+  status: { fontSize: 14, color: colors.text.primary, marginTop: 8, fontFamily: 'WorkSans-Regular' },
+  count: { fontSize: 14, fontWeight: '600', color: colors.primary.dark, marginTop: 8, fontFamily: 'WorkSans-SemiBold' },
 });

@@ -10,6 +10,7 @@ import {
   TextInput,
 } from 'react-native';
 import { colors } from '@/constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -141,13 +142,17 @@ export default function EditOrderScreen() {
         enableOnAndroid
         extraScrollHeight={20}>
         {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <LinearGradient
+          colors={[colors.primary.light, colors.primary.main]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={24} color={colors.white} />
           </TouchableOpacity>
           <Text style={styles.title}>Editar Pedido {order.number}</Text>
           <View />
-        </View>
+        </LinearGradient>
 
         {/* Status */}
         <View style={styles.section}>
@@ -338,12 +343,17 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: 18,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   section: {
     marginHorizontal: 20,
@@ -354,6 +364,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     marginBottom: 10,
+    fontFamily: 'Fraunces-Bold',
   },
   statusButtonGroup: {
     flexDirection: 'row',
@@ -381,6 +392,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     flexWrap: 'wrap',
     textAlign: 'center',
+    fontFamily: 'WorkSans-SemiBold',
   },
   statusButtonTextActive: {
     color: colors.white,
@@ -395,6 +407,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   textarea: {
     minHeight: 100,
@@ -423,6 +436,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-Bold',
   },
   discountTypeButtonTextActive: {
     color: colors.white,
@@ -455,10 +469,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   emptyText: {
     fontSize: 16,
     color: colors.text.disabled,
+    fontFamily: 'WorkSans-Regular',
   },
   labelSmall: {
     fontSize: 14,
@@ -466,6 +482,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     marginTop: 12,
     marginBottom: 8,
+    fontFamily: 'WorkSans-SemiBold',
   },
   paymentTypeGrid: {
     flexDirection: 'row',
@@ -495,6 +512,7 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     flexShrink: 1,
     flexWrap: 'wrap',
+    fontFamily: 'WorkSans-SemiBold',
   },
   paymentTypeBtnTextActive: {
     color: colors.white,
@@ -524,6 +542,7 @@ const styles = StyleSheet.create({
     color: colors.primary.dark,
     flexShrink: 1,
     flexWrap: 'wrap',
+    fontFamily: 'WorkSans-SemiBold',
   },
   conditionBtnTextActive: {
     color: colors.white,

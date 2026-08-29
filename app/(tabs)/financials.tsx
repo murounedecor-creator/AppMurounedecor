@@ -15,6 +15,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   format,
   addMonths,
@@ -88,17 +89,27 @@ export default function FinancialsScreen() {
     const monthStart = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
     const monthEnd = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
 
-    // Só considera pedidos que JÁ têm recebimento gerado dentro do mês selecionado
-    const { data: revenueTx } = await supabase
+    // Busca TODAS as transações de receita vinculadas a pedidos (não só do mês)
+    // para determinar qual foi a PRIMEIRA parcela de cada pedido
+    const { data: allRevenueTx } = await supabase
       .from('transactions')
-      .select('order_id')
+      .select('order_id, date, due_date')
       .eq('category', 'order_revenue')
-      .not('order_id', 'is', null)
-      .or(`and(date.gte.${monthStart},date.lte.${monthEnd}),and(due_date.gte.${monthStart},due_date.lte.${monthEnd})`);
+      .not('order_id', 'is', null);
 
-    const orderIds = Array.from(
-      new Set((revenueTx || []).map((t: { order_id: string }) => t.order_id))
-    );
+    // Agrupa por order_id e encontra a data mais antiga de cada pedido
+    const earliestByOrder: Record<string, string> = {};
+    for (const t of (allRevenueTx || [])) {
+      const d = t.due_date || t.date;
+      if (!earliestByOrder[t.order_id] || d < earliestByOrder[t.order_id]) {
+        earliestByOrder[t.order_id] = d;
+      }
+    }
+
+    // Só conta o custo de pedidos cuja PRIMEIRA parcela cai no mês selecionado
+    const orderIds = Object.entries(earliestByOrder)
+      .filter(([, earliestDate]) => earliestDate >= monthStart && earliestDate <= monthEnd)
+      .map(([orderId]) => orderId);
 
     let prodCost = 0;
     let opExpenses = 0;
@@ -514,9 +525,13 @@ export default function FinancialsScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+      <LinearGradient
+        colors={[themeColors.primary.light, themeColors.primary.main]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.headerTitle}>Financeiro</Text>
-      </View>
+      </LinearGradient>
 
       {/* Main Tabs */}
       <View style={styles.mainTabBar}>
@@ -564,9 +579,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 16,
-    backgroundColor: colors.primary.dark,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
-  headerTitle: { fontSize: 24, fontWeight: '700', color: colors.white },
+  headerTitle: { fontSize: 24, fontWeight: '700', color: colors.white, fontFamily: 'Fraunces-Bold' },
 
   // Main tab bar
   mainTabBar: {
@@ -584,8 +603,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderBottomColor: 'transparent',
   },
   mainTabActive: { borderBottomColor: colors.primary.dark },
-  mainTabText: { fontSize: 12, fontWeight: '600', color: colors.text.secondary, flexShrink: 1, flexWrap: 'wrap', textAlign: 'center' },
-  mainTabTextActive: { color: colors.primary.dark },
+  mainTabText: { fontSize: 12, fontWeight: '600', color: colors.text.secondary, flexShrink: 1, flexWrap: 'wrap', textAlign: 'center', fontFamily: 'WorkSans-SemiBold' },
+  mainTabTextActive: { color: colors.primary.dark, fontFamily: 'WorkSans-Bold' },
 
   // Month navigation
   monthNav: {
@@ -606,6 +625,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     textTransform: 'capitalize',
     minWidth: 160,
     textAlign: 'center',
+    fontFamily: 'Fraunces-SemiBold',
   },
 
   tabContent: { flex: 1, paddingHorizontal: 16 },
@@ -629,8 +649,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderColor: colors.border,
   },
   subTabActive: { backgroundColor: colors.primary.dark, borderColor: colors.primary.dark },
-  subTabText: { fontSize: 11, fontWeight: '600', color: colors.text.secondary, flexShrink: 1, flexWrap: 'wrap', textAlign: 'center' },
-  subTabTextActive: { color: colors.white },
+  subTabText: { fontSize: 11, fontWeight: '600', color: colors.text.secondary, flexShrink: 1, flexWrap: 'wrap', textAlign: 'center', fontFamily: 'WorkSans-SemiBold' },
+  subTabTextActive: { color: colors.white, fontFamily: 'WorkSans-Bold' },
 
   // Cards
   card: {
@@ -644,17 +664,17 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     alignItems: 'center',
   },
   cardLeft: { width: 48, alignItems: 'center', gap: 4 },
-  cardDate: { fontSize: 12, fontWeight: '600', color: colors.text.secondary },
+  cardDate: { fontSize: 12, fontWeight: '600', color: colors.text.secondary, fontFamily: 'WorkSans-SemiBold' },
   statusDot: { width: 8, height: 8, borderRadius: 4 },
   cardCenter: { flex: 1, marginHorizontal: 8 },
-  cardCondition: { fontSize: 13, fontWeight: '600', color: colors.text.primary },
-  cardCustomer: { fontSize: 12, color: colors.text.secondary, marginTop: 2 },
-  cardDue: { fontSize: 11, color: colors.warning, marginTop: 2 },
-  cardTag: { fontSize: 10, color: colors.text.light, marginTop: 2, textTransform: 'capitalize' },
+  cardCondition: { fontSize: 13, fontWeight: '600', color: colors.text.primary, fontFamily: 'WorkSans-SemiBold' },
+  cardCustomer: { fontSize: 12, color: colors.text.secondary, marginTop: 2, fontFamily: 'WorkSans-Regular' },
+  cardDue: { fontSize: 11, color: colors.warning, marginTop: 2, fontFamily: 'WorkSans-Regular' },
+  cardTag: { fontSize: 10, color: colors.text.light, marginTop: 2, textTransform: 'capitalize', fontFamily: 'WorkSans-Regular' },
   cardRight: { alignItems: 'flex-end' },
-  pendingAmount: { fontSize: 14, fontWeight: '700', color: colors.text.primary },
-  receivedAmount: { fontSize: 11, color: colors.revenue, marginTop: 2 },
-  cashflowAmt: { fontSize: 14, fontWeight: '700' },
+  pendingAmount: { fontSize: 14, fontWeight: '700', color: colors.text.primary, fontFamily: 'WorkSans-Bold' },
+  receivedAmount: { fontSize: 11, color: colors.revenue, marginTop: 2, fontFamily: 'WorkSans-Regular' },
+  cashflowAmt: { fontSize: 14, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
 
   // Cashflow summary
   summaryCards: {
@@ -672,8 +692,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderLeftWidth: 4,
     gap: 4,
   },
-  summaryLabel: { fontSize: 11, color: colors.text.secondary },
-  summaryValue: { fontSize: 16, fontWeight: '700' },
+  summaryLabel: { fontSize: 11, color: colors.text.secondary, fontFamily: 'WorkSans-Regular' },
+  summaryValue: { fontSize: 16, fontWeight: '700', fontFamily: 'Fraunces-Bold' },
   filterRow: {
     flexDirection: 'row',
     gap: 8,
@@ -690,8 +710,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderColor: colors.border,
   },
   filterChipActive: { backgroundColor: colors.primary.dark, borderColor: colors.primary.dark },
-  filterChipText: { fontSize: 12, fontWeight: '600', color: colors.text.secondary, flexShrink: 1, flexWrap: 'wrap' },
-  filterChipTextActive: { color: colors.white },
+  filterChipText: { fontSize: 12, fontWeight: '600', color: colors.text.secondary, flexShrink: 1, flexWrap: 'wrap', fontFamily: 'WorkSans-SemiBold' },
+  filterChipTextActive: { color: colors.white, fontFamily: 'WorkSans-Bold' },
 
   // Profit
   profitCard: {
@@ -707,8 +727,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  profitCardLabel: { fontSize: 14, color: colors.text.secondary },
-  profitValue: { fontSize: 32, fontWeight: '700', marginTop: 8 },
+  profitCardLabel: { fontSize: 14, color: colors.text.secondary, fontFamily: 'WorkSans-Regular' },
+  profitValue: { fontSize: 32, fontWeight: '700', marginTop: 8, fontFamily: 'Fraunces-Bold' },
   profitBar: {
     flexDirection: 'row',
     height: 10,
@@ -726,7 +746,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   },
   legendItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   legendDot: { width: 8, height: 8, borderRadius: 4 },
-  legendText: { fontSize: 12, color: colors.text.secondary },
+  legendText: { fontSize: 12, color: colors.text.secondary, fontFamily: 'WorkSans-Regular' },
 
   breakdownCard: {
     backgroundColor: colors.white,
@@ -736,7 +756,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  breakdownTitle: { fontSize: 15, fontWeight: '700', color: colors.text.primary, marginBottom: 12 },
+  breakdownTitle: { fontSize: 15, fontWeight: '700', color: colors.text.primary, marginBottom: 12, fontFamily: 'Fraunces-Bold' },
   breakdownRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -744,8 +764,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 8,
   },
   breakdownLeft: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-  breakdownLabel: { fontSize: 14, color: colors.text.primary },
-  breakdownAmt: { fontSize: 14, fontWeight: '600' },
+  breakdownLabel: { fontSize: 14, color: colors.text.primary, fontFamily: 'WorkSans-Regular' },
+  breakdownAmt: { fontSize: 14, fontWeight: '600', fontFamily: 'WorkSans-SemiBold' },
   breakdownDivider: { height: 1, backgroundColor: colors.border, marginVertical: 4 },
 
   settingsBtn: {
@@ -760,7 +780,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  settingsBtnText: { fontSize: 14, fontWeight: '600', color: colors.primary.dark },
+  settingsBtnText: { fontSize: 14, fontWeight: '600', color: colors.primary.dark, fontFamily: 'WorkSans-SemiBold' },
 
   // Modals
   overlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
@@ -777,7 +797,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     alignItems: 'center',
     marginBottom: 16,
   },
-  modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text.primary },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text.primary, fontFamily: 'Fraunces-Bold' },
   detailRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -786,10 +806,10 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  detailLabel: { fontSize: 13, color: colors.text.secondary },
-  detailValue: { fontSize: 13, fontWeight: '600', color: colors.text.primary, maxWidth: '60%', textAlign: 'right' },
+  detailLabel: { fontSize: 13, color: colors.text.secondary, fontFamily: 'WorkSans-Regular' },
+  detailValue: { fontSize: 13, fontWeight: '600', color: colors.text.primary, maxWidth: '60%', textAlign: 'right', fontFamily: 'WorkSans-SemiBold' },
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 10 },
-  badgeText: { fontSize: 11, fontWeight: '600', color: colors.white },
+  badgeText: { fontSize: 11, fontWeight: '600', color: colors.white, fontFamily: 'WorkSans-SemiBold' },
   receiveBtn: {
     flexDirection: 'row',
     backgroundColor: colors.revenue,
@@ -800,9 +820,9 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     gap: 8,
     marginTop: 20,
   },
-  receiveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700' },
+  receiveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
 
-  settingsDesc: { fontSize: 13, color: colors.text.secondary, marginBottom: 16 },
+  settingsDesc: { fontSize: 13, color: colors.text.secondary, marginBottom: 16, fontFamily: 'WorkSans-Regular' },
   settingsRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -811,7 +831,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
-  settingsLabel: { fontSize: 15, color: colors.text.primary },
+  settingsLabel: { fontSize: 15, color: colors.text.primary, fontFamily: 'WorkSans-Regular' },
   saveBtn: {
     backgroundColor: colors.primary.dark,
     borderRadius: 10,
@@ -820,7 +840,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     marginTop: 20,
     marginBottom: 20,
   },
-  saveBtnText: { color: colors.white, fontSize: 16, fontWeight: '700' },
+  saveBtnText: { color: colors.white, fontSize: 16, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
 
-  emptyText: { textAlign: 'center', color: colors.text.disabled, marginTop: 30 },
+  emptyText: { textAlign: 'center', color: colors.text.disabled, marginTop: 30, fontFamily: 'WorkSans-Regular' },
 });

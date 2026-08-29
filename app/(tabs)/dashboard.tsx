@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Eye, EyeOff } from 'lucide-react-native';
 import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -111,10 +112,14 @@ export default function Dashboard() {
     <View style={styles.container}>
     <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <LinearGradient
+        colors={[themeColors.primary.light, themeColors.primary.main]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Text style={styles.title}>Muroune Decor</Text>
         <Text style={styles.subtitle}>Dashboard</Text>
-      </View>
+      </LinearGradient>
 
       {/* Counter Cards */}
       <View style={styles.countersContainer}>
@@ -219,7 +224,13 @@ export default function Dashboard() {
     <TouchableOpacity
       style={[styles.fab, { bottom: 80 + insets.bottom }]}
       onPress={() => router.push('/new-order')}>
-      <Ionicons name="add" size={28} color={themeColors.white} />
+      <LinearGradient
+        colors={[themeColors.primary.main, themeColors.primary.dark]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.fabGradient}>
+        <Ionicons name="add" size={28} color={themeColors.white} />
+      </LinearGradient>
     </TouchableOpacity>
       <Text style={styles.buildLabel}>Build 2026-08-15-A</Text>
     </View>
@@ -237,7 +248,11 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 16,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   fab: {
     position: 'absolute',
@@ -245,25 +260,31 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary.dark,
-    justifyContent: 'center',
-    alignItems: 'center',
     elevation: 8,
     shadowColor: '#000',
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
+    overflow: 'hidden',
+  },
+  fabGradient: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   subtitle: {
     fontSize: 14,
     color: colors.white,
     marginTop: 4,
     opacity: 0.9,
+    fontFamily: 'WorkSans-Medium',
   },
   countersContainer: {
     flexDirection: 'row',
@@ -292,12 +313,14 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 12,
     color: colors.text.secondary,
     fontWeight: '600',
+    fontFamily: 'WorkSans-SemiBold',
   },
   counterValue: {
     fontSize: 24,
     fontWeight: '700',
     color: colors.primary.dark,
     marginTop: 4,
+    fontFamily: 'Fraunces-Bold',
   },
   calendarContainer: {
     marginHorizontal: 20,
@@ -323,6 +346,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '600',
     color: colors.text.primary,
     textTransform: 'capitalize',
+    fontFamily: 'Fraunces-SemiBold',
   },
   calendarGrid: {
     flexDirection: 'row',
@@ -338,6 +362,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.text.secondary,
     marginBottom: 4,
     lineHeight: 32,
+    fontFamily: 'WorkSans-SemiBold',
   },
   dayCell: {
     width: '14.28%',
@@ -358,6 +383,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.white,
     textAlign: 'center',
     minWidth: 24,
+    fontFamily: 'WorkSans-SemiBold',
   },
   summaryContainer: {
     marginHorizontal: 20,
@@ -368,6 +394,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     marginBottom: 12,
+    fontFamily: 'Fraunces-Bold',
   },
   totalCard: {
     backgroundColor: colors.primary.main,
@@ -385,12 +412,14 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 12,
     color: colors.white,
     fontWeight: '600',
+    fontFamily: 'WorkSans-SemiBold',
   },
   totalValue: {
     fontSize: 24,
     fontWeight: '700',
     color: colors.white,
     marginTop: 4,
+    fontFamily: 'Fraunces-Bold',
   },
   statusGrid: {
     flexDirection: 'row',
@@ -417,11 +446,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '600',
     color: colors.text.secondary,
     flex: 1,
+    fontFamily: 'WorkSans-SemiBold',
   },
   statusCount: {
     fontSize: 14,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'Fraunces-Bold',
   },
   actionsContainer: {
     marginHorizontal: 20,
@@ -433,6 +464,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     marginBottom: 12,
+    fontFamily: 'Fraunces-Bold',
   },
   actionsGrid: {
     flexDirection: 'row',
@@ -453,6 +485,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '700',
     color: colors.white,
     textAlign: 'center',
+    fontFamily: 'WorkSans-Bold',
   },
   buildLabel: {
     textAlign: 'center',

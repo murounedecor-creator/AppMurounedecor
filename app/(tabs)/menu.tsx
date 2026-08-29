@@ -1,6 +1,7 @@
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Switch } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -38,9 +39,13 @@ export default function MenuScreen() {
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <LinearGradient
+        colors={[themeColors.primary.light, themeColors.primary.main]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Text style={styles.title}>Menu</Text>
-      </View>
+      </LinearGradient>
 
       <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1 }}>
         <View style={[styles.businessCard, { backgroundColor: themeColors.surface, borderColor: themeColors.border }]}>
@@ -142,12 +147,17 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   businessCard: {
     flexDirection: 'row',
@@ -170,10 +180,12 @@ const styles = StyleSheet.create({
   businessName: {
     fontSize: 15,
     fontWeight: '600',
+    fontFamily: 'WorkSans-SemiBold',
   },
   businessTagline: {
     fontSize: 12,
     marginTop: 2,
+    fontFamily: 'WorkSans-Regular',
   },
   sectionLabel: {
     fontSize: 12,
@@ -182,6 +194,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 16,
     marginBottom: 6,
+    fontFamily: 'WorkSans-SemiBold',
   },
   row: {
     flexDirection: 'row',
@@ -196,6 +209,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   proCard: {
     flexDirection: 'row',
@@ -208,15 +222,18 @@ const styles = StyleSheet.create({
   proTitle: {
     fontSize: 14,
     fontWeight: '600',
+    fontFamily: 'WorkSans-SemiBold',
   },
   proSubtitle: {
     fontSize: 12,
     marginTop: 2,
+    fontFamily: 'WorkSans-Regular',
   },
   version: {
     textAlign: 'center',
     fontSize: 11,
     marginTop: 20,
     marginBottom: 30,
+    fontFamily: 'WorkSans-Regular',
   },
 });

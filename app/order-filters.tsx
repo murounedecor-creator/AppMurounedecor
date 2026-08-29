@@ -101,6 +101,7 @@ const getStyles = (colors: typeof lightColors) =>
       fontSize: 18,
       fontWeight: '700',
       color: colors.text.primary,
+      fontFamily: 'Fraunces-Bold',
     },
     row: {
       flexDirection: 'row',
@@ -127,6 +128,7 @@ const getStyles = (colors: typeof lightColors) =>
       fontSize: 10,
       fontWeight: '700',
       color: colors.text.secondary,
+      fontFamily: 'WorkSans-Bold',
     },
     sectionLabel: {
       fontSize: 13,
@@ -135,6 +137,7 @@ const getStyles = (colors: typeof lightColors) =>
       marginHorizontal: 20,
       marginTop: 20,
       marginBottom: 4,
+      fontFamily: 'WorkSans-Bold',
     },
     periodRow: {
       flexDirection: 'row',
@@ -151,11 +154,13 @@ const getStyles = (colors: typeof lightColors) =>
       fontSize: 15,
       fontWeight: '600',
       color: colors.text.primary,
+      fontFamily: 'WorkSans-SemiBold',
     },
     periodSubtitle: {
       fontSize: 12,
       color: colors.text.secondary,
       marginTop: 2,
+      fontFamily: 'WorkSans-Regular',
     },
     statusWrap: {
       flexDirection: 'row',
@@ -183,6 +188,7 @@ const getStyles = (colors: typeof lightColors) =>
     statusPillTextActive: {
       color: colors.white,
       fontWeight: '600',
+      fontFamily: 'WorkSans-SemiBold',
     },
     applyButton: {
       margin: 20,
@@ -195,5 +201,6 @@ const getStyles = (colors: typeof lightColors) =>
       color: colors.white,
       fontSize: 16,
       fontWeight: '700',
+      fontFamily: 'WorkSans-Bold',
     },
   });

@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabase';
@@ -164,9 +165,13 @@ export default function OrdersScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <LinearGradient
+        colors={[themeColors.primary.light, themeColors.primary.main]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Text style={styles.title}>Pedidos</Text>
-      </View>
+      </LinearGradient>
 
       {/* Busca */}
       <View style={styles.searchContainer}>
@@ -238,7 +243,13 @@ export default function OrdersScreen() {
       <TouchableOpacity
         style={styles.fab}
         onPress={() => router.push('/new-order')}>
-        <Ionicons name="add" size={28} color={themeColors.white} />
+        <LinearGradient
+          colors={[themeColors.primary.main, themeColors.primary.dark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabGradient}>
+          <Ionicons name="add" size={28} color={themeColors.white} />
+        </LinearGradient>
       </TouchableOpacity>
     </View>
   );
@@ -252,12 +263,17 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   searchContainer: {
     flexDirection: 'row',
@@ -278,6 +294,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 10,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   filterWrapper: {
     height: 48,
@@ -321,6 +338,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   filterButtonTextActive: {
     color: colors.white,
@@ -343,6 +361,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   filterBadge: {
     backgroundColor: colors.primary.dark,
@@ -357,6 +376,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.white,
     fontSize: 11,
     fontWeight: '700',
+    fontFamily: 'WorkSans-Bold',
   },
   listContent: {
     paddingHorizontal: 20,
@@ -381,6 +401,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'Fraunces-Bold',
   },
   statusBadge: {
     paddingVertical: 4,
@@ -391,12 +412,14 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 11,
     fontWeight: '600',
     color: colors.white,
+    fontFamily: 'WorkSans-SemiBold',
   },
   customerName: {
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.secondary,
     marginBottom: 8,
+    fontFamily: 'WorkSans-SemiBold',
   },
   orderDetails: {
     flexDirection: 'row',
@@ -406,17 +429,20 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   detailText: {
     fontSize: 12,
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-Regular',
   },
   totalText: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.primary.dark,
+    fontFamily: 'Fraunces-Bold',
   },
   emptyText: {
     textAlign: 'center',
     marginTop: 40,
     fontSize: 16,
     color: colors.text.disabled,
+    fontFamily: 'WorkSans-Regular',
   },
   fab: {
     position: 'absolute',
@@ -425,7 +451,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary.dark,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 8,
@@ -433,5 +458,12 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     shadowOpacity: 0.3,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
+    overflow: 'hidden',
+  },
+  fabGradient: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });

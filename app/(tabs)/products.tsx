@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { LinearGradient } from 'expo-linear-gradient';
 
 const ImagePicker = Platform.OS !== 'web' ? require('expo-image-picker') : null;
 
@@ -187,9 +188,13 @@ export default function ProductsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+      <LinearGradient
+        colors={[themeColors.primary.light, themeColors.primary.main]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 16 }]}>
         <Text style={styles.title}>Produtos</Text>
-      </View>
+      </LinearGradient>
 
       <View style={styles.searchContainer}>
         <TextInput
@@ -244,7 +249,13 @@ export default function ProductsScreen() {
       />
 
       <TouchableOpacity style={styles.fab} onPress={() => handleOpenModal()}>
-        <Ionicons name="add" size={28} color={themeColors.white} />
+        <LinearGradient
+          colors={[themeColors.primary.main, themeColors.primary.dark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabGradient}>
+          <Ionicons name="add" size={28} color={themeColors.white} />
+        </LinearGradient>
       </TouchableOpacity>
 
       {/* Modal */}
@@ -382,6 +393,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     color: colors.text.primary,
     backgroundColor: colors.surface,
+    fontFamily: 'WorkSans-Regular',
   },
   container: {
     flex: 1,
@@ -390,12 +402,17 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   title: {
     fontSize: 28,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   listContent: {
     paddingHorizontal: 20,
@@ -425,16 +442,19 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Bold',
   },
   code: {
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 4,
+    fontFamily: 'WorkSans-Regular',
   },
   price: {
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 2,
+    fontFamily: 'WorkSans-Regular',
   },
   actions: {
     flexDirection: 'row',
@@ -446,6 +466,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     marginTop: 40,
     fontSize: 16,
     color: colors.text.disabled,
+    fontFamily: 'WorkSans-Regular',
   },
   fab: {
     position: 'absolute',
@@ -454,7 +475,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: colors.primary.main,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 6,
@@ -464,6 +484,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     shadowRadius: 4,
     zIndex: 999,
     opacity: 1,
+    overflow: 'hidden',
+  },
+  fabGradient: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   modalContainer: {
     flex: 1,
@@ -488,11 +515,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 24,
     color: colors.text.primary,
     fontWeight: '700',
+    fontFamily: 'WorkSans-Bold',
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'Fraunces-Bold',
   },
   formContainer: {
     paddingHorizontal: 20,
@@ -508,6 +537,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   label: {
     fontSize: 14,
@@ -515,6 +545,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.text.primary,
     marginTop: 12,
     marginBottom: 8,
+    fontFamily: 'WorkSans-SemiBold',
   },
   labelMargin: {
     marginTop: 16,
@@ -546,9 +577,11 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     flexShrink: 1,
     flexWrap: 'wrap',
     textAlign: 'center',
+    fontFamily: 'WorkSans-SemiBold',
   },
   unitButtonTextActive: {
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   addImageBtn: {
     flexDirection: 'row',
@@ -565,6 +598,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.white,
+    fontFamily: 'WorkSans-SemiBold',
   },
   imagesContainer: {
     flexDirection: 'row',
@@ -611,5 +645,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
 });

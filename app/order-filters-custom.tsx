@@ -161,6 +161,7 @@ const getStyles = (colors: typeof lightColors) =>
       fontSize: 18,
       fontWeight: '700',
       color: colors.text.primary,
+      fontFamily: 'Fraunces-Bold',
     },
     optionBlock: {
       marginHorizontal: 20,
@@ -180,6 +181,7 @@ const getStyles = (colors: typeof lightColors) =>
       fontSize: 15,
       fontWeight: '600',
       color: colors.text.primary,
+      fontFamily: 'WorkSans-SemiBold',
     },
     dateField: {
       paddingVertical: 10,
@@ -231,5 +233,6 @@ const getStyles = (colors: typeof lightColors) =>
       color: colors.white,
       fontSize: 16,
       fontWeight: '700',
+      fontFamily: 'WorkSans-Bold',
     },
   });

@@ -19,6 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   startOfMonth,
   endOfMonth,
@@ -418,7 +419,11 @@ export default function AgendaScreen() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + 12 }]}>
+      <LinearGradient
+        colors={[themeColors.primary.light, themeColors.primary.main]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={[styles.header, { paddingTop: insets.top + 12 }]}>
         <Text style={styles.headerTitle}>Agenda</Text>
         <View style={styles.headerRight}>
           <TouchableOpacity
@@ -432,7 +437,7 @@ export default function AgendaScreen() {
             <Ionicons name="list" size={18} color={showList ? themeColors.white : themeColors.text.secondary} />
           </TouchableOpacity>
         </View>
-      </View>
+      </LinearGradient>
 
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {/* Sub-abas do calendário */}
@@ -729,9 +734,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingBottom: 16,
-    backgroundColor: colors.primary.dark,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
-  headerTitle: { fontSize: 24, fontWeight: '700', color: colors.white },
+  headerTitle: { fontSize: 24, fontWeight: '700', color: colors.white, fontFamily: 'Fraunces-Bold' },
   headerRight: { flexDirection: 'row', gap: 6 },
   viewBtn: {
     width: 36,
@@ -757,6 +766,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     textTransform: 'capitalize',
     minWidth: 160,
     textAlign: 'center',
+    fontFamily: 'Fraunces-SemiBold',
   },
   weekRow: {
     flexDirection: 'row',
@@ -769,6 +779,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     fontWeight: '600',
     color: colors.text.light,
     paddingBottom: 4,
+    fontFamily: 'WorkSans-SemiBold',
   },
   grid: {
     flexDirection: 'row',
@@ -785,13 +796,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     margin: 2,
   },
   dayCellSelected: { backgroundColor: colors.primary.light },
-  dayNum: { fontSize: 13, color: colors.text.primary },
-  dayNumToday: { fontWeight: '700', color: colors.primary.dark },
-  dayNumSelected: { fontWeight: '700' },
+  dayNum: { fontSize: 13, color: colors.text.primary, fontFamily: 'WorkSans-Regular' },
+  dayNumToday: { fontWeight: '700', color: colors.primary.dark, fontFamily: 'WorkSans-Bold' },
+  dayNumSelected: { fontWeight: '700', fontFamily: 'WorkSans-Bold' },
   dots: { flexDirection: 'row', gap: 2, marginTop: 1 },
   dot: { width: 5, height: 5, borderRadius: 3 },
   section: { paddingHorizontal: 16, marginTop: 16 },
-  sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text.primary, marginBottom: 10 },
+  sectionTitle: { fontSize: 16, fontWeight: '700', color: colors.text.primary, marginBottom: 10, fontFamily: 'Fraunces-Bold' },
   dayHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -807,8 +818,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  addBtnText: { color: colors.white, fontSize: 12, fontWeight: '600' },
-  emptyText: { color: colors.text.disabled, textAlign: 'center', marginTop: 16 },
+  addBtnText: { color: colors.white, fontSize: 12, fontWeight: '600', fontFamily: 'WorkSans-SemiBold' },
+  emptyText: { color: colors.text.disabled, textAlign: 'center', marginTop: 16, fontFamily: 'WorkSans-Regular' },
   eventCard: {
     flexDirection: 'row',
     backgroundColor: colors.white,
@@ -820,10 +831,10 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   },
   eventBar: { width: 4 },
   eventBody: { flex: 1, padding: 12 },
-  eventTitle: { fontSize: 14, fontWeight: '600', color: colors.text.primary },
-  eventCustomer: { fontSize: 12, color: colors.primary.dark, marginTop: 2 },
-  eventTime: { fontSize: 11, color: colors.text.light, marginTop: 2 },
-  eventDesc: { fontSize: 12, color: colors.text.secondary, marginTop: 3 },
+  eventTitle: { fontSize: 14, fontWeight: '600', color: colors.text.primary, fontFamily: 'WorkSans-SemiBold' },
+  eventCustomer: { fontSize: 12, color: colors.primary.dark, marginTop: 2, fontFamily: 'WorkSans-Regular' },
+  eventTime: { fontSize: 11, color: colors.text.light, marginTop: 2, fontFamily: 'WorkSans-Regular' },
+  eventDesc: { fontSize: 12, color: colors.text.secondary, marginTop: 3, fontFamily: 'WorkSans-Regular' },
 
   // Modal
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'flex-end' },
@@ -840,13 +851,14 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     alignItems: 'center',
     marginBottom: 12,
   },
-  modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text.primary },
+  modalTitle: { fontSize: 20, fontWeight: '700', color: colors.text.primary, fontFamily: 'Fraunces-Bold' },
   dateLabel: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.primary.dark,
     marginBottom: 12,
     textTransform: 'capitalize',
+    fontFamily: 'WorkSans-SemiBold',
   },
   input: {
     paddingVertical: 12,
@@ -858,6 +870,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     fontSize: 14,
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
   },
   textarea: { minHeight: 80, textAlignVertical: 'top' },
   fieldLabel: {
@@ -866,6 +879,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.text.primary,
     marginBottom: 8,
     marginTop: 4,
+    fontFamily: 'WorkSans-SemiBold',
   },
   chipRow: { marginBottom: 10 },
   chip: {
@@ -878,8 +892,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     marginRight: 8,
   },
   chipActive: { backgroundColor: colors.primary.dark, borderColor: colors.primary.dark },
-  chipText: { fontSize: 12, color: colors.text.secondary },
-  chipTextActive: { color: colors.white },
+  chipText: { fontSize: 12, color: colors.text.secondary, fontFamily: 'WorkSans-Regular' },
+  chipTextActive: { color: colors.white, fontFamily: 'WorkSans-Bold' },
   colorRow: { flexDirection: 'row', gap: 10, marginBottom: 20 },
   colorCircle: { width: 32, height: 32, borderRadius: 16 },
   colorCircleActive: { borderWidth: 3, borderColor: colors.text.primary },
@@ -889,7 +903,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 14,
     alignItems: 'center',
   },
-  saveBtnText: { color: colors.white, fontSize: 16, fontWeight: '700' },
+  saveBtnText: { color: colors.white, fontSize: 16, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
   deleteBtn: {
     backgroundColor: colors.error,
     borderRadius: 10,
@@ -898,7 +912,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     marginTop: 10,
     marginBottom: 30,
   },
-  deleteBtnText: { color: colors.white, fontSize: 16, fontWeight: '700' },
+  deleteBtnText: { color: colors.white, fontSize: 16, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
 
   // Sub-abas do calendário
   tabRow: {
@@ -927,9 +941,11 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     color: colors.text.secondary,
     flexShrink: 1,
     flexWrap: 'wrap',
+    fontFamily: 'WorkSans-SemiBold',
   },
   tabBtnTextActive: {
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
 
   // Aba Compras
@@ -948,7 +964,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     gap: 4,
   },
-  compartilharBtnText: { color: colors.white, fontSize: 12, fontWeight: '600' },
+  compartilharBtnText: { color: colors.white, fontSize: 12, fontWeight: '600', fontFamily: 'WorkSans-SemiBold' },
   compraCard: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -960,8 +976,8 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderColor: colors.border,
   },
   compraInfo: { flex: 1 },
-  compraNome: { fontSize: 14, fontWeight: '600', color: colors.text.primary },
-  compraQtd: { fontSize: 12, color: colors.text.secondary, marginTop: 2 },
+  compraNome: { fontSize: 14, fontWeight: '600', color: colors.text.primary, fontFamily: 'WorkSans-SemiBold' },
+  compraQtd: { fontSize: 12, color: colors.text.secondary, marginTop: 2, fontFamily: 'WorkSans-Regular' },
   compraCheckbox: {
     width: 28,
     height: 28,

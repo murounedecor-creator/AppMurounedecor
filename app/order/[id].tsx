@@ -11,6 +11,7 @@ import {
   Image,
 } from 'react-native';
 import { colors } from '@/constants/colors';
+import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '@/lib/supabase';
 import { deleteOrderCascade } from '@/lib/orders';
 import { scheduleOrderReminder, cancelOrderReminder } from '@/lib/notifications';
@@ -1122,7 +1123,11 @@ export default function OrderViewScreen() {
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={[styles.header, { paddingTop: insets.top + 16 }]}>
+        <LinearGradient
+          colors={[colors.primary.light, colors.primary.main]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={[styles.header, { paddingTop: insets.top + 16 }]}>
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={24} color={colors.white} />
           </TouchableOpacity>
@@ -1137,7 +1142,7 @@ export default function OrderViewScreen() {
               <Ionicons name="pencil" size={20} color={colors.white} />
             </TouchableOpacity>
           </View>
-        </View>
+        </LinearGradient>
 
         {/* Status Bar */}
         <View style={styles.statusBar}>
@@ -1411,7 +1416,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingHorizontal: 20,
     paddingBottom: 12,
-    backgroundColor: colors.primary.main,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 8,
+    elevation: 4,
   },
   headerCenter: {
     flex: 1,
@@ -1421,6 +1430,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   headerActions: {
     flexDirection: 'row',
@@ -1451,6 +1461,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: colors.white,
+    fontFamily: 'WorkSans-SemiBold',
   },
   deleteBtn: {
     flexDirection: 'row',
@@ -1463,6 +1474,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.error,
+    fontFamily: 'WorkSans-SemiBold',
   },
   section: {
     marginHorizontal: 20,
@@ -1473,6 +1485,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     marginBottom: 10,
+    fontFamily: 'Fraunces-Bold',
   },
   infoCard: {
     backgroundColor: colors.surface,
@@ -1494,11 +1507,13 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: colors.text.secondary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   value: {
     fontSize: 13,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   itemCard: {
     backgroundColor: colors.surface,
@@ -1520,11 +1535,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-Bold',
   },
   itemDetail: {
     fontSize: 12,
     color: colors.text.secondary,
     marginTop: 2,
+    fontFamily: 'WorkSans-Regular',
   },
   thumbnail: {
     width: '100%',
@@ -1559,21 +1576,25 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   totalLabelHighlight: {
     fontSize: 14,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   totalValue: {
     fontSize: 13,
     fontWeight: '700',
     color: colors.primary.dark,
+    fontFamily: 'Fraunces-Bold',
   },
   totalValueHighlight: {
     fontSize: 16,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'Fraunces-Bold',
   },
   observationsCard: {
     backgroundColor: colors.surface,
@@ -1586,6 +1607,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: colors.text.primary,
     lineHeight: 20,
+    fontFamily: 'WorkSans-Regular',
   },
   docButtonsContainer: {
     flexDirection: 'row',
@@ -1605,6 +1627,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '600',
     color: colors.white,
+    fontFamily: 'WorkSans-SemiBold',
   },
   buttonPayments: {
     flexDirection: 'row',
@@ -1620,6 +1643,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '700',
     color: colors.white,
+    fontFamily: 'WorkSans-Bold',
   },
   modalOverlay: {
     flex: 1,
@@ -1638,6 +1662,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     marginBottom: 12,
+    fontFamily: 'Fraunces-Bold',
   },
   statusOption: {
     flexDirection: 'row',
@@ -1656,6 +1681,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   modalCloseBtn: {
     paddingVertical: 12,
@@ -1670,9 +1696,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
   emptyText: {
     fontSize: 16,
     color: colors.text.disabled,
+    fontFamily: 'WorkSans-Regular',
   },
 });
