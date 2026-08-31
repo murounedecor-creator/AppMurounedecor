@@ -14,9 +14,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
-import { format, addDays, addBusinessDays } from 'date-fns';
+import { format, addDays, addBusinessDays, parseISO } from 'date-fns';
+import { Platform } from 'react-native';
 import { ptBR } from 'date-fns/locale';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { Platform } from 'react-native';
 
 interface Order {
   id: string;
@@ -46,6 +49,8 @@ export default function GenerateReceiptsScreen() {
   const [paymentType, setPaymentType] = useState('à_vista');
   const [schedulePayments, setSchedulePayments] = useState(false);
   const [paymentSchedules, setPaymentSchedules] = useState<PaymentSchedule[]>([]);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [editingScheduleIndex, setEditingScheduleIndex] = useState<number>(-1);
 
   useEffect(() => {
     if (id) {
@@ -170,6 +175,24 @@ export default function GenerateReceiptsScreen() {
   const handlePaymentTypeChange = (type: string) => {
     setPaymentType(type);
     calculatePaymentSchedule(type, hasEntrance);
+  };
+
+  const handleScheduleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(Platform.OS === 'ios');
+    if (selectedDate && editingScheduleIndex >= 0) {
+      const newDate = format(selectedDate, 'yyyy-MM-dd');
+      setPaymentSchedules(prev =>
+        prev.map((s, i) => i === editingScheduleIndex ? { ...s, date: newDate } : s)
+      );
+    }
+    if (Platform.OS === 'android') {
+      setEditingScheduleIndex(-1);
+    }
+  };
+
+  const openDatePicker = (index: number) => {
+    setEditingScheduleIndex(index);
+    setShowDatePicker(true);
   };
 
   const handleSchedulePayments = async () => {
@@ -366,9 +389,14 @@ export default function GenerateReceiptsScreen() {
           {paymentSchedules.map((schedule, index) => (
             <View key={index} style={styles.scheduleCard}>
               <View style={styles.scheduleHeader}>
-                <Text style={styles.scheduleDate}>
-                  {format(new Date(schedule.date), 'dd/MM/yyyy', { locale: ptBR })}
-                </Text>
+                <TouchableOpacity onPress={() => openDatePicker(index)}>
+                  <View style={styles.scheduleDateContainer}>
+                    <Text style={styles.scheduleDate}>
+                      {format(new Date(schedule.date), 'dd/MM/yyyy', { locale: ptBR })}
+                    </Text>
+                    <Ionicons name="calendar" size={16} color={colors.primary.dark} style={{ marginLeft: 6 }} />
+                  </View>
+                </TouchableOpacity>
                 <Text style={styles.scheduleValue}>
                   R$ {schedule.value.toFixed(2).replace('.', ',')}
                 </Text>
@@ -376,6 +404,15 @@ export default function GenerateReceiptsScreen() {
               <Text style={styles.scheduleDescription}>{schedule.description}</Text>
             </View>
           ))}
+          {showDatePicker && editingScheduleIndex >= 0 && (
+            <DateTimePicker
+              value={new Date(paymentSchedules[editingScheduleIndex].date + 'T00:00:00')}
+              mode="date"
+              display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+              onChange={handleScheduleDateChange}
+              minimumDate={new Date()}
+            />
+          )}
         </View>
 
         {/* Total */}
@@ -558,6 +595,10 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: colors.text.primary,
     fontFamily: 'WorkSans-Bold',
+  },
+  scheduleDateContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   scheduleValue: {
     fontSize: 14,

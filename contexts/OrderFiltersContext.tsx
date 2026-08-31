@@ -43,10 +43,10 @@ type OrderFiltersContextType = {
 const OrderFiltersContext = createContext<OrderFiltersContextType | undefined>(undefined);
 
 export function OrderFiltersProvider({ children }: { children: ReactNode }) {
-  const [periodPreset, setPeriodPreset] = useState<PeriodPreset>('recentes');
+  const [periodPreset, setPeriodPreset] = useState<PeriodPreset>('ultimos_pedidos');
   const [customStartDate, setCustomStartDate] = useState<Date>(new Date());
   const [customEndDate, setCustomEndDate] = useState<Date>(new Date());
-  const [lastOrdersCount, setLastOrdersCount] = useState<number>(5);
+  const [lastOrdersCount, setLastOrdersCount] = useState<number>(20);
   const [selectedStatuses, setSelectedStatuses] = useState<string[]>([]);
 
   const toggleStatus = (id: string) => {
@@ -118,7 +118,7 @@ export function OrderFiltersProvider({ children }: { children: ReactNode }) {
   };
 
   const resetFilters = () => {
-    setPeriodPreset('recentes');
+    setPeriodPreset('ultimos_pedidos');
     setSelectedStatuses([]);
   };
 

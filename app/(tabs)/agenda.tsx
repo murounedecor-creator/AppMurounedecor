@@ -76,6 +76,7 @@ export default function AgendaScreen() {
 
   useEffect(() => {
     loadEvents();
+    loadEntregas();
   }, [currentMonth]);
 
   useEffect(() => {
@@ -270,6 +271,9 @@ export default function AgendaScreen() {
 
   const eventsOnDate = (date: Date) =>
     events.filter(e => isSameDay(new Date(e.date + 'T00:00:00'), date));
+
+  const entregasOnDate = (date: Date) =>
+    entregas.filter(e => isSameDay(new Date(e.prazo_entrega + 'T00:00:00'), date));
 
   const today = new Date();
   const monthStart = startOfMonth(currentMonth);
@@ -523,6 +527,11 @@ export default function AgendaScreen() {
                           ))}
                         </View>
                       )}
+                      {entregasOnDate(dayDate).length > 0 && dayEvts.length === 0 && (
+                        <View style={styles.dots}>
+                          <View style={[styles.dot, { backgroundColor: themeColors.status.inProgress }]} />
+                        </View>
+                      )}
                     </TouchableOpacity>
                   );
                 })}
@@ -770,10 +779,10 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   },
   weekRow: {
     flexDirection: 'row',
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
   },
   weekLabel: {
-    flex: 1,
+    width: '14.28%',
     textAlign: 'center',
     fontSize: 11,
     fontWeight: '600',
@@ -784,16 +793,15 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
     justifyContent: 'flex-start',
   },
   dayCell: {
-    width: 40,
-    height: 40,
+    width: '14.28%',
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 8,
-    margin: 2,
   },
   dayCellSelected: { backgroundColor: colors.primary.light },
   dayNum: { fontSize: 13, color: colors.text.primary, fontFamily: 'WorkSans-Regular' },

@@ -165,7 +165,7 @@ export default function Dashboard() {
             </Text>
           ))}
           {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-            <View key={`empty-${i}`} style={styles.dayCell} />
+            <View key={`empty-${i}`} style={styles.dayCellEmpty} />
           ))}
           {days.map(day => (
             <View
@@ -373,6 +373,11 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     backgroundColor: colors.primary.main,
     marginBottom: 4,
     overflow: 'visible',
+  },
+  dayCellEmpty: {
+    width: '14.28%',
+    height: 40,
+    marginBottom: 4,
   },
   dayOutOfMonth: {
     opacity: 0.3,
