@@ -18,6 +18,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format, parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useOrderFilters } from '@/contexts/OrderFiltersContext';
+import Watermark from '@/components/Watermark';
 
 type Order = {
   id: string;
@@ -165,6 +166,7 @@ export default function OrdersScreen() {
 
   return (
     <View style={styles.container}>
+      <Watermark />
       <LinearGradient
         colors={[themeColors.primary.light, themeColors.primary.main]}
         start={{ x: 0, y: 0 }}

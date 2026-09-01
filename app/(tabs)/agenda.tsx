@@ -30,6 +30,7 @@ import {
   differenceInCalendarDays,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import Watermark from '@/components/Watermark';
 
 const EVENT_COLORS = ['#C9A96E', '#8B6914', '#00B341', '#0070F3', '#FF9500', '#F31260'];
 
@@ -422,6 +423,7 @@ export default function AgendaScreen() {
 
   return (
     <View style={styles.container}>
+      <Watermark />
       {/* Header */}
       <LinearGradient
         colors={[themeColors.primary.light, themeColors.primary.main]}

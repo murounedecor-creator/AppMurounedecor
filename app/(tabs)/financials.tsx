@@ -26,6 +26,7 @@ import {
   parseISO,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import Watermark from '@/components/Watermark';
 
 type SubTab = 'payments' | 'cashflow' | 'profit';
 type PaymentFilter = 'overdue' | 'pending' | 'received';
@@ -556,6 +557,7 @@ export default function FinancialsScreen() {
 
   return (
     <View style={styles.container}>
+      <Watermark />
       {/* Header */}
       <LinearGradient
         colors={[themeColors.primary.light, themeColors.primary.main]}

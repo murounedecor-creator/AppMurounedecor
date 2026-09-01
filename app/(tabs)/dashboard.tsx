@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import Watermark from '@/components/Watermark';
 
 export default function Dashboard() {
   const { themeColors } = useTheme();
@@ -110,7 +111,8 @@ export default function Dashboard() {
 
   return (
     <View style={styles.container}>
-    <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+      <Watermark />
+      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient
         colors={[themeColors.primary.light, themeColors.primary.main]}
