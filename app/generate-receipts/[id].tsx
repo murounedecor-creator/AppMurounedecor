@@ -15,7 +15,6 @@ import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { format, addDays, addBusinessDays, parseISO } from 'date-fns';
-import { Platform } from 'react-native';
 import { ptBR } from 'date-fns/locale';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -203,12 +202,27 @@ export default function GenerateReceiptsScreen() {
 
     setSaving(true);
     try {
-      // Insert all payment schedules into transactions
       const conditionLabel =
         paymentType === 'à_vista' ? 'À vista' :
         paymentType === 'a_prazo' ? 'A prazo (20d)' : 'Parcelado 3x';
 
-      const transactions = paymentSchedules.map(schedule => ({
+      const { data: existing } = await supabase
+        .from('transactions')
+        .select('id, description, due_date')
+        .eq('order_id', order.id)
+        .eq('category', 'order_revenue');
+
+      const existingKeys = new Set((existing || []).map(t => `${t.description}|${t.due_date}`));
+      const newSchedules = paymentSchedules.filter(schedule =>
+        !existingKeys.has(`${order.number} - ${schedule.description}|${schedule.date}`)
+      );
+
+      if (newSchedules.length === 0) {
+        Alert.alert('Aviso', 'Todos os pagamentos já foram agendados para este pedido.');
+        return;
+      }
+
+      const transactions = newSchedules.map(schedule => ({
         customer_id: order.customer_id,
         description: `${order.number} - ${schedule.description}`,
         amount: schedule.value,
@@ -228,7 +242,7 @@ export default function GenerateReceiptsScreen() {
 
       if (error) throw error;
 
-      Alert.alert('Sucesso', 'Pagamentos agendados no módulo Financeiro', [
+      Alert.alert('Sucesso', `${newSchedules.length} pagamento(s) agendado(s) no módulo Financeiro`, [
         { text: 'OK', onPress: () => router.back() },
       ]);
     } catch (error) {

@@ -196,6 +196,27 @@ export default function FinancialsScreen() {
     ]);
   };
 
+  const handleDeletePayment = (t: Transaction) => {
+    Alert.alert('Excluir', 'Excluir este pagamento? Esta ação não pode ser desfeita.', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          const { error } = await supabase.from('transactions').delete().eq('id', t.id);
+          if (error) {
+            console.error('Error deleting payment:', error);
+            Alert.alert('Erro', 'Não foi possível excluir este pagamento.');
+            return;
+          }
+          setDetailVisible(false);
+          setSelected(null);
+          loadTransactions();
+        },
+      },
+    ]);
+  };
+
   // ─── CASHFLOW ────────────────────────────────────────────────────────────────
   const totalRevenue = revenues
     .filter(t => t.status === 'completed')
@@ -248,6 +269,12 @@ export default function FinancialsScreen() {
             <Text style={styles.receivedAmount}>Rec: {fmt(Number(t.amount_received))}</Text>
           )}
         </View>
+        <TouchableOpacity
+          onPress={() => handleDeletePayment(t)}
+          style={styles.cardDeleteBtn}
+          hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+          <Ionicons name="trash-outline" size={18} color={themeColors.error} />
+        </TouchableOpacity>
       </TouchableOpacity>
     );
   };
@@ -317,6 +344,11 @@ export default function FinancialsScreen() {
                 <Text style={styles.receiveBtnText}>Marcar como Recebido</Text>
               </TouchableOpacity>
             )}
+
+            <TouchableOpacity style={styles.deletePaymentBtn} onPress={() => handleDeletePayment(selected)}>
+              <Ionicons name="trash-outline" size={20} color={themeColors.white} />
+              <Text style={styles.receiveBtnText}>Excluir Pagamento</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -672,6 +704,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   cardDue: { fontSize: 11, color: colors.warning, marginTop: 2, fontFamily: 'WorkSans-Regular' },
   cardTag: { fontSize: 10, color: colors.text.light, marginTop: 2, textTransform: 'capitalize', fontFamily: 'WorkSans-Regular' },
   cardRight: { alignItems: 'flex-end' },
+  cardDeleteBtn: { paddingLeft: 10, paddingVertical: 4 },
   pendingAmount: { fontSize: 14, fontWeight: '700', color: colors.text.primary, fontFamily: 'WorkSans-Bold' },
   receivedAmount: { fontSize: 11, color: colors.revenue, marginTop: 2, fontFamily: 'WorkSans-Regular' },
   cashflowAmt: { fontSize: 14, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
@@ -821,6 +854,16 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     marginTop: 20,
   },
   receiveBtnText: { color: colors.white, fontSize: 15, fontWeight: '700', fontFamily: 'WorkSans-Bold' },
+  deletePaymentBtn: {
+    flexDirection: 'row',
+    backgroundColor: colors.error,
+    borderRadius: 10,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    marginTop: 10,
+  },
 
   settingsDesc: { fontSize: 13, color: colors.text.secondary, marginBottom: 16, fontFamily: 'WorkSans-Regular' },
   settingsRow: {
