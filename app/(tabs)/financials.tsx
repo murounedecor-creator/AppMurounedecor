@@ -27,6 +27,7 @@ import {
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import Watermark from '@/components/Watermark';
+import MetallicButton from '@/components/MetallicButton';
 
 type SubTab = 'payments' | 'cashflow' | 'profit';
 type PaymentFilter = 'overdue' | 'pending' | 'received';
@@ -340,10 +341,12 @@ export default function FinancialsScreen() {
             })}
 
             {selected.status !== 'completed' && selected.status !== 'cancelled' && (
-              <TouchableOpacity style={styles.receiveBtn} onPress={() => markReceived(selected)}>
-                <Ionicons name="checkmark-circle" size={20} color={themeColors.white} />
-                <Text style={styles.receiveBtnText}>Marcar como Recebido</Text>
-              </TouchableOpacity>
+              <MetallicButton
+                icon={<Ionicons name="checkmark-circle" size={20} color={themeColors.white} />}
+                label="Marcar como Recebido"
+                onPress={() => markReceived(selected)}
+                style={styles.receiveBtn}
+              />
             )}
 
             <TouchableOpacity style={styles.deletePaymentBtn} onPress={() => handleDeletePayment(selected)}>
@@ -384,12 +387,14 @@ export default function FinancialsScreen() {
               <Text style={styles.settingsLabel}>{item.label}</Text>
             </TouchableOpacity>
           ))}
-          <TouchableOpacity style={styles.saveBtn} onPress={() => {
-            AsyncStorage.setItem('@muroune:profit_settings', JSON.stringify(profitSettings));
-            setSettingsVisible(false);
-          }}>
-            <Text style={styles.saveBtnText}>Confirmar</Text>
-          </TouchableOpacity>
+          <MetallicButton
+            label="Confirmar"
+            onPress={() => {
+              AsyncStorage.setItem('@muroune:profit_settings', JSON.stringify(profitSettings));
+              setSettingsVisible(false);
+            }}
+            style={styles.saveBtn}
+          />
         </View>
       </View>
     </Modal>
@@ -546,10 +551,12 @@ export default function FinancialsScreen() {
       </View>
 
       {/* Settings Button */}
-      <TouchableOpacity style={styles.settingsBtn} onPress={() => setSettingsVisible(true)}>
-        <Ionicons name="settings-outline" size={18} color={themeColors.primary.dark} />
-        <Text style={styles.settingsBtnText}>Definições de Lucro</Text>
-      </TouchableOpacity>
+      <MetallicButton
+        icon={<Ionicons name="settings-outline" size={18} color={themeColors.white} />}
+        label="Definições de Lucro"
+        onPress={() => setSettingsVisible(true)}
+        style={styles.settingsBtn}
+      />
 
       <View style={{ height: 60 }} />
     </ScrollView>
@@ -557,7 +564,6 @@ export default function FinancialsScreen() {
 
   return (
     <View style={styles.container}>
-      <Watermark />
       {/* Header */}
       <LinearGradient
         colors={[themeColors.primary.light, themeColors.primary.main]}
@@ -604,6 +610,7 @@ export default function FinancialsScreen() {
 
       {renderDetail()}
       {renderProfitSettings()}
+      <Watermark />
     </View>
   );
 }

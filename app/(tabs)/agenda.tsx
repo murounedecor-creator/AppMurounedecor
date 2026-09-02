@@ -31,6 +31,7 @@ import {
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import Watermark from '@/components/Watermark';
+import MetallicButton from '@/components/MetallicButton';
 
 const EVENT_COLORS = ['#C9A96E', '#8B6914', '#00B341', '#0070F3', '#FF9500', '#F31260'];
 
@@ -423,7 +424,6 @@ export default function AgendaScreen() {
 
   return (
     <View style={styles.container}>
-      <Watermark />
       {/* Header */}
       <LinearGradient
         colors={[themeColors.primary.light, themeColors.primary.main]}
@@ -545,10 +545,12 @@ export default function AgendaScreen() {
                   <Text style={styles.sectionTitle}>
                     {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
                   </Text>
-                  <TouchableOpacity style={styles.addBtn} onPress={openAdd}>
-                    <Ionicons name="add" size={16} color={themeColors.white} />
-                    <Text style={styles.addBtnText}>Visitar</Text>
-                  </TouchableOpacity>
+                  <MetallicButton
+                    icon={<Ionicons name="add" size={16} color={themeColors.white} />}
+                    label="Visitar"
+                    onPress={openAdd}
+                    style={styles.addBtn}
+                  />
                 </View>
                 {selectedDateEvents.length === 0 ? (
                   <Text style={styles.emptyText}>Nenhum evento neste dia</Text>
@@ -605,10 +607,12 @@ export default function AgendaScreen() {
           <View style={styles.section}>
             <View style={styles.comprasHeader}>
               <Text style={styles.sectionTitle}>Lista de Compras</Text>
-              <TouchableOpacity style={styles.compartilharBtn} onPress={handleCompartilharCompras}>
-                <Ionicons name="share-outline" size={18} color={themeColors.white} />
-                <Text style={styles.compartilharBtnText}>Compartilhar</Text>
-              </TouchableOpacity>
+              <MetallicButton
+                icon={<Ionicons name="share-outline" size={18} color={themeColors.white} />}
+                label="Compartilhar"
+                onPress={handleCompartilharCompras}
+                style={styles.compartilharBtn}
+              />
             </View>
             {loadingCompras ? (
               <Text style={styles.emptyText}>Carregando...</Text>
@@ -718,11 +722,11 @@ export default function AgendaScreen() {
                 ))}
               </View>
 
-              <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
-                <Text style={styles.saveBtnText}>
-                  {editingEvent ? 'Salvar Alterações' : 'Adicionar Evento'}
-                </Text>
-              </TouchableOpacity>
+              <MetallicButton
+                label={editingEvent ? 'Salvar Alterações' : 'Adicionar Evento'}
+                onPress={handleSave}
+                style={styles.saveBtn}
+              />
 
               {editingEvent && (
                 <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
@@ -733,6 +737,7 @@ export default function AgendaScreen() {
           </View>
         </View>
       </Modal>
+      <Watermark />
     </View>
   );
 }

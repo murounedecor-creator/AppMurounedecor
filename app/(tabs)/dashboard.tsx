@@ -12,6 +12,7 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import Watermark from '@/components/Watermark';
+import MetallicButton from '@/components/MetallicButton';
 
 export default function Dashboard() {
   const { themeColors } = useTheme();
@@ -111,7 +112,6 @@ export default function Dashboard() {
 
   return (
     <View style={styles.container}>
-      <Watermark />
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient
@@ -223,18 +223,14 @@ export default function Dashboard() {
     </ScrollView>
 
     {/* FAB */}
-    <TouchableOpacity
+    <MetallicButton
+      circular
+      icon={<Ionicons name="add" size={28} color={themeColors.white} />}
+      onPress={() => router.push('/new-order')}
       style={[styles.fab, { bottom: 80 + insets.bottom }]}
-      onPress={() => router.push('/new-order')}>
-      <LinearGradient
-        colors={[themeColors.primary.main, themeColors.primary.dark]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.fabGradient}>
-        <Ionicons name="add" size={28} color={themeColors.white} />
-      </LinearGradient>
-    </TouchableOpacity>
+    />
       <Text style={styles.buildLabel}>Build 2026-08-15-A</Text>
+      <Watermark />
     </View>
   );
 }

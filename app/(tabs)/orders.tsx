@@ -19,6 +19,7 @@ import { format, parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-f
 import { ptBR } from 'date-fns/locale';
 import { useOrderFilters } from '@/contexts/OrderFiltersContext';
 import Watermark from '@/components/Watermark';
+import MetallicButton from '@/components/MetallicButton';
 
 type Order = {
   id: string;
@@ -166,7 +167,6 @@ export default function OrdersScreen() {
 
   return (
     <View style={styles.container}>
-      <Watermark />
       <LinearGradient
         colors={[themeColors.primary.light, themeColors.primary.main]}
         start={{ x: 0, y: 0 }}
@@ -242,17 +242,13 @@ export default function OrdersScreen() {
       />
 
       {/* FAB - Novo Pedido */}
-      <TouchableOpacity
+      <MetallicButton
+        circular
+        icon={<Ionicons name="add" size={28} color={themeColors.white} />}
+        onPress={() => router.push('/new-order')}
         style={styles.fab}
-        onPress={() => router.push('/new-order')}>
-        <LinearGradient
-          colors={[themeColors.primary.main, themeColors.primary.dark]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.fabGradient}>
-          <Ionicons name="add" size={28} color={themeColors.white} />
-        </LinearGradient>
-      </TouchableOpacity>
+      />
+      <Watermark />
     </View>
   );
 }
