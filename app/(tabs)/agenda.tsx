@@ -30,7 +30,6 @@ import {
   differenceInCalendarDays,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import Watermark from '@/components/Watermark';
 import MetallicButton from '@/components/MetallicButton';
 
 const EVENT_COLORS = ['#C9A96E', '#8B6914', '#00B341', '#0070F3', '#FF9500', '#F31260'];
@@ -426,7 +425,7 @@ export default function AgendaScreen() {
     <View style={styles.container}>
       {/* Header */}
       <LinearGradient
-        colors={[themeColors.primary.light, themeColors.primary.main]}
+        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 12 }]}>
@@ -737,7 +736,7 @@ export default function AgendaScreen() {
           </View>
         </View>
       </Modal>
-      <Watermark />
+
     </View>
   );
 }

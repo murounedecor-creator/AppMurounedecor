@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Pressable, Text, View, StyleSheet, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { BlurView } from 'expo-blur';
 import { lightColors, withOpacity } from '@/constants/colors';
 
 interface MetallicButtonProps {
@@ -30,23 +29,17 @@ export default function MetallicButton({ label, icon, onPress, style, disabled, 
         style,
       ]}>
       <LinearGradient
-        colors={[
-          withOpacity(c.primary.main, 0.65),
-          withOpacity(c.primary.light, 0.45),
-          withOpacity(c.primary.dark, 0.75),
-        ]}
+        colors={[c.primary.main, c.primary.light, c.primary.dark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.gradient, circular && styles.gradientCircular]}>
-        <BlurView intensity={30} tint="light" style={[styles.blur, circular && styles.blurCircular]}>
-          <View style={styles.shine} />
-          <View style={styles.content}>
-            {icon}
-            {label && (
-              <Text style={styles.label}>{label}</Text>
-            )}
-          </View>
-        </BlurView>
+        <View style={styles.shine} />
+        <View style={styles.content}>
+          {icon}
+          {label && (
+            <Text style={styles.label}>{label}</Text>
+          )}
+        </View>
       </LinearGradient>
     </Pressable>
   );
@@ -69,9 +62,6 @@ const styles = StyleSheet.create({
     }),
   },
   gradient: {
-    borderRadius: 12,
-  },
-  blur: {
     borderRadius: 12,
     paddingVertical: 14,
     paddingHorizontal: 20,
@@ -106,9 +96,6 @@ const styles = StyleSheet.create({
     height: 56,
   },
   gradientCircular: {
-    borderRadius: 28,
-  },
-  blurCircular: {
     borderRadius: 28,
     paddingVertical: 0,
     paddingHorizontal: 0,

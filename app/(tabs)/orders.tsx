@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { lightColors } from '@/constants/colors';
+import { lightColors, withOpacity } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +18,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format, parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useOrderFilters } from '@/contexts/OrderFiltersContext';
-import Watermark from '@/components/Watermark';
 import MetallicButton from '@/components/MetallicButton';
 
 type Order = {
@@ -168,7 +167,7 @@ export default function OrdersScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[themeColors.primary.light, themeColors.primary.main]}
+        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 16 }]}>
@@ -248,7 +247,7 @@ export default function OrdersScreen() {
         onPress={() => router.push('/new-order')}
         style={styles.fab}
       />
-      <Watermark />
+
     </View>
   );
 }
@@ -405,6 +404,9 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 12,
+    borderWidth: 1,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
+    overflow: 'hidden',
   },
   statusText: {
     fontSize: 11,

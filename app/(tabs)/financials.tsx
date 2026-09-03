@@ -26,7 +26,6 @@ import {
   parseISO,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import Watermark from '@/components/Watermark';
 import MetallicButton from '@/components/MetallicButton';
 
 type SubTab = 'payments' | 'cashflow' | 'profit';
@@ -566,7 +565,7 @@ export default function FinancialsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <LinearGradient
-        colors={[themeColors.primary.light, themeColors.primary.main]}
+        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 12 }]}>
@@ -610,7 +609,7 @@ export default function FinancialsScreen() {
 
       {renderDetail()}
       {renderProfitSettings()}
-      <Watermark />
+
     </View>
   );
 }

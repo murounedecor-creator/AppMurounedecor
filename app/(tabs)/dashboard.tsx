@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Eye, EyeOff } from 'lucide-react-native';
-import { lightColors } from '@/constants/colors';
+import { lightColors, withOpacity } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Transaction } from '@/lib/supabase';
 import { startOfMonth, endOfMonth, eachDayOfInterval, format, isSameMonth } from 'date-fns';
@@ -11,7 +11,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
-import Watermark from '@/components/Watermark';
 import MetallicButton from '@/components/MetallicButton';
 
 export default function Dashboard() {
@@ -115,7 +114,7 @@ export default function Dashboard() {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
       {/* Header */}
       <LinearGradient
-        colors={[themeColors.primary.light, themeColors.primary.main]}
+        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 16 }]}>
@@ -126,22 +125,37 @@ export default function Dashboard() {
       {/* Counter Cards */}
       <View style={styles.countersContainer}>
         <TouchableOpacity
-          style={[styles.counterCard, styles.cardCustomers]}
           onPress={() => router.push('/(tabs)/customers')}>
-          <Text style={styles.counterLabel}>Clientes</Text>
-          <Text style={styles.counterValue}>{customers}</Text>
+          <LinearGradient
+            colors={['#FFF3E0', '#FFE0B2', '#FFCC80']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.counterCard, styles.cardCustomers]}>
+            <Text style={styles.counterLabel}>Clientes</Text>
+            <Text style={styles.counterValue}>{customers}</Text>
+          </LinearGradient>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.counterCard, styles.cardServices]}
           onPress={() => router.push('/(tabs)/products')}>
-          <Text style={styles.counterLabel}>Produtos</Text>
-          <Text style={styles.counterValue}>{products}</Text>
+          <LinearGradient
+            colors={['#E3F2FD', '#BBDEFB', '#90CAF9']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.counterCard, styles.cardServices]}>
+            <Text style={styles.counterLabel}>Produtos</Text>
+            <Text style={styles.counterValue}>{products}</Text>
+          </LinearGradient>
         </TouchableOpacity>
         <TouchableOpacity
-          style={[styles.counterCard, styles.cardProducts]}
           onPress={() => router.push('/new-order')}>
-          <Text style={styles.counterLabel}>Serviços</Text>
-          <Text style={styles.counterValue}>{services}</Text>
+          <LinearGradient
+            colors={['#F3E5F5', '#E1BEE7', '#CE93D8']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.counterCard, styles.cardProducts]}>
+            <Text style={styles.counterLabel}>Serviços</Text>
+            <Text style={styles.counterValue}>{services}</Text>
+          </LinearGradient>
         </TouchableOpacity>
       </View>
 
@@ -176,6 +190,7 @@ export default function Dashboard() {
                 styles.dayCell,
                 !isSameMonth(day, currentDate) && styles.dayOutOfMonth,
               ]}>
+              <View style={styles.dayCellShine} />
               <Text style={styles.dayNumber}>{format(day, 'd')}</Text>
             </View>
           ))}
@@ -230,7 +245,6 @@ export default function Dashboard() {
       style={[styles.fab, { bottom: 80 + insets.bottom }]}
     />
       <Text style={styles.buildLabel}>Build 2026-08-15-A</Text>
-      <Watermark />
     </View>
   );
 }
@@ -297,16 +311,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
+    overflow: 'hidden',
   },
-  cardCustomers: {
-    backgroundColor: '#FFF3E0',
-  },
-  cardServices: {
-    backgroundColor: '#E3F2FD',
-  },
-  cardProducts: {
-    backgroundColor: '#F3E5F5',
-  },
+  cardCustomers: {},
+  cardServices: {},
+  cardProducts: {},
   counterLabel: {
     fontSize: 12,
     color: colors.text.secondary,
@@ -370,7 +381,9 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 6,
     backgroundColor: colors.primary.main,
     marginBottom: 4,
-    overflow: 'visible',
+    overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
   },
   dayCellEmpty: {
     width: '14.28%',
@@ -379,6 +392,14 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   },
   dayOutOfMonth: {
     opacity: 0.3,
+  },
+  dayCellShine: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 2,
+    backgroundColor: withOpacity(lightColors.primary.light, 0.6),
   },
   dayNumber: {
     fontSize: 13,
@@ -405,6 +426,9 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingHorizontal: 16,
     borderRadius: 12,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
+    overflow: 'hidden',
   },
   totalHeader: {
     flexDirection: 'row',
@@ -482,6 +506,9 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
+    overflow: 'hidden',
   },
   actionText: {
     fontSize: 12,

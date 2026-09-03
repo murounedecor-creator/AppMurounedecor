@@ -21,7 +21,6 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Contacts from 'expo-contacts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Watermark from '@/components/Watermark';
 import MetallicButton from '@/components/MetallicButton';
 
 const Location = Platform.OS !== 'web' ? require('expo-location') : null;
@@ -519,7 +518,7 @@ export default function CustomersScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[themeColors.primary.light, themeColors.primary.main]}
+        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 16 }]}>
@@ -881,7 +880,7 @@ export default function CustomersScreen() {
           </View>
         </View>
       </Modal>
-      <Watermark />
+
     </View>
   );
 }
