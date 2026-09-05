@@ -12,7 +12,7 @@ import {
   Platform,
   Share,
 } from 'react-native';
-import { lightColors, withOpacity } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Customer, CalendarEvent } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -30,7 +30,6 @@ import {
   differenceInCalendarDays,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import MetallicButton from '@/components/MetallicButton';
 
 const EVENT_COLORS = ['#C9A96E', '#8B6914', '#00B341', '#0070F3', '#FF9500', '#F31260'];
 
@@ -425,7 +424,7 @@ export default function AgendaScreen() {
     <View style={styles.container}>
       {/* Header */}
       <LinearGradient
-        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
+        colors={[themeColors.primary.light, themeColors.primary.main]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 12 }]}>
@@ -456,14 +455,6 @@ export default function AgendaScreen() {
               key={t.key}
               style={[styles.tabBtn, abaCalendario === t.key && styles.tabBtnActive]}
               onPress={() => setAbaCalendario(t.key)}>
-              {abaCalendario === t.key && (
-                <LinearGradient
-                  colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 1 }}
-                  style={styles.tabBtnActiveGradient}
-                />
-              )}
               <Text style={[styles.tabBtnText, abaCalendario === t.key && styles.tabBtnTextActive]}>
                 {t.label}
               </Text>
@@ -552,12 +543,10 @@ export default function AgendaScreen() {
                   <Text style={styles.sectionTitle}>
                     {format(selectedDate, "dd 'de' MMMM", { locale: ptBR })}
                   </Text>
-                  <MetallicButton
-                    icon={<Ionicons name="add" size={16} color={themeColors.white} />}
-                    label="Visitar"
-                    onPress={openAdd}
-                    style={styles.addBtn}
-                  />
+                  <TouchableOpacity style={styles.addBtn} onPress={openAdd}>
+                    <Ionicons name="add" size={16} color={themeColors.white} />
+                    <Text style={styles.addBtnText}>Visitar</Text>
+                  </TouchableOpacity>
                 </View>
                 {selectedDateEvents.length === 0 ? (
                   <Text style={styles.emptyText}>Nenhum evento neste dia</Text>
@@ -614,12 +603,10 @@ export default function AgendaScreen() {
           <View style={styles.section}>
             <View style={styles.comprasHeader}>
               <Text style={styles.sectionTitle}>Lista de Compras</Text>
-              <MetallicButton
-                icon={<Ionicons name="share-outline" size={18} color={themeColors.white} />}
-                label="Compartilhar"
-                onPress={handleCompartilharCompras}
-                style={styles.compartilharBtn}
-              />
+              <TouchableOpacity style={styles.compartilharBtn} onPress={handleCompartilharCompras}>
+                <Ionicons name="share-outline" size={18} color={themeColors.white} />
+                <Text style={styles.compartilharBtnText}>Compartilhar</Text>
+              </TouchableOpacity>
             </View>
             {loadingCompras ? (
               <Text style={styles.emptyText}>Carregando...</Text>
@@ -729,11 +716,11 @@ export default function AgendaScreen() {
                 ))}
               </View>
 
-              <MetallicButton
-                label={editingEvent ? 'Salvar Alterações' : 'Adicionar Evento'}
-                onPress={handleSave}
-                style={styles.saveBtn}
-              />
+              <TouchableOpacity style={styles.saveBtn} onPress={handleSave}>
+                <Text style={styles.saveBtnText}>
+                  {editingEvent ? 'Salvar Alterações' : 'Adicionar Evento'}
+                </Text>
+              </TouchableOpacity>
 
               {editingEvent && (
                 <TouchableOpacity style={styles.deleteBtn} onPress={handleDelete}>
@@ -744,7 +731,6 @@ export default function AgendaScreen() {
           </View>
         </View>
       </Modal>
-
     </View>
   );
 }
@@ -950,20 +936,12 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: withOpacity(lightColors.primary.light, 0.3),
+    borderColor: colors.border,
     alignItems: 'center',
-    overflow: 'hidden',
   },
   tabBtnActive: {
-    borderColor: withOpacity(lightColors.primary.light, 0.5),
-  },
-  tabBtnActiveGradient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderRadius: 8,
+    backgroundColor: colors.primary.dark,
+    borderColor: colors.primary.dark,
   },
   tabBtnText: {
     fontSize: 13,

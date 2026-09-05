@@ -8,7 +8,7 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import { lightColors, withOpacity } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Transaction, Customer } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -26,7 +26,6 @@ import {
   parseISO,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import MetallicButton from '@/components/MetallicButton';
 
 type SubTab = 'payments' | 'cashflow' | 'profit';
 type PaymentFilter = 'overdue' | 'pending' | 'received';
@@ -251,12 +250,8 @@ export default function FinancialsScreen() {
     return (
       <TouchableOpacity
         key={t.id}
+        style={styles.card}
         onPress={() => { setSelected(t); setDetailVisible(true); }}>
-        <LinearGradient
-          colors={[themeColors.white, withOpacity(themeColors.primary.light, 0.3), themeColors.white]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.card}>
         <View style={styles.cardLeft}>
           <Text style={styles.cardDate}>{format(new Date(t.date), 'dd/MM')}</Text>
           <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[t.status] || themeColors.text.disabled }]} />
@@ -280,18 +275,12 @@ export default function FinancialsScreen() {
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Ionicons name="trash-outline" size={18} color={themeColors.error} />
         </TouchableOpacity>
-        </LinearGradient>
       </TouchableOpacity>
     );
   };
 
   const renderCashflowCard = (t: Transaction) => (
-    <LinearGradient
-      key={t.id}
-      colors={[themeColors.white, withOpacity(themeColors.primary.light, 0.3), themeColors.white]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={styles.card}>
+    <View key={t.id} style={styles.card}>
       <View style={styles.cardLeft}>
         <Text style={styles.cardDate}>{format(new Date(t.date), 'dd/MM')}</Text>
         <Ionicons
@@ -309,7 +298,7 @@ export default function FinancialsScreen() {
       <Text style={[styles.cashflowAmt, { color: t.type === 'revenue' ? themeColors.revenue : themeColors.expense }]}>
         {t.type === 'revenue' ? '+' : '-'}{fmt(Number(t.amount))}
       </Text>
-    </LinearGradient>
+    </View>
   );
 
   // ─── DETAIL MODAL ─────────────────────────────────────────────────────────────
@@ -350,12 +339,10 @@ export default function FinancialsScreen() {
             })}
 
             {selected.status !== 'completed' && selected.status !== 'cancelled' && (
-              <MetallicButton
-                icon={<Ionicons name="checkmark-circle" size={20} color={themeColors.white} />}
-                label="Marcar como Recebido"
-                onPress={() => markReceived(selected)}
-                style={styles.receiveBtn}
-              />
+              <TouchableOpacity style={styles.receiveBtn} onPress={() => markReceived(selected)}>
+                <Ionicons name="checkmark-circle" size={20} color={themeColors.white} />
+                <Text style={styles.receiveBtnText}>Marcar como Recebido</Text>
+              </TouchableOpacity>
             )}
 
             <TouchableOpacity style={styles.deletePaymentBtn} onPress={() => handleDeletePayment(selected)}>
@@ -396,14 +383,12 @@ export default function FinancialsScreen() {
               <Text style={styles.settingsLabel}>{item.label}</Text>
             </TouchableOpacity>
           ))}
-          <MetallicButton
-            label="Confirmar"
-            onPress={() => {
-              AsyncStorage.setItem('@muroune:profit_settings', JSON.stringify(profitSettings));
-              setSettingsVisible(false);
-            }}
-            style={styles.saveBtn}
-          />
+          <TouchableOpacity style={styles.saveBtn} onPress={() => {
+            AsyncStorage.setItem('@muroune:profit_settings', JSON.stringify(profitSettings));
+            setSettingsVisible(false);
+          }}>
+            <Text style={styles.saveBtnText}>Confirmar</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </Modal>
@@ -560,12 +545,10 @@ export default function FinancialsScreen() {
       </View>
 
       {/* Settings Button */}
-      <MetallicButton
-        icon={<Ionicons name="settings-outline" size={18} color={themeColors.white} />}
-        label="Definições de Lucro"
-        onPress={() => setSettingsVisible(true)}
-        style={styles.settingsBtn}
-      />
+      <TouchableOpacity style={styles.settingsBtn} onPress={() => setSettingsVisible(true)}>
+        <Ionicons name="settings-outline" size={18} color={themeColors.primary.dark} />
+        <Text style={styles.settingsBtnText}>Definições de Lucro</Text>
+      </TouchableOpacity>
 
       <View style={{ height: 60 }} />
     </ScrollView>
@@ -575,7 +558,7 @@ export default function FinancialsScreen() {
     <View style={styles.container}>
       {/* Header */}
       <LinearGradient
-        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
+        colors={[themeColors.primary.light, themeColors.primary.main]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 12 }]}>
@@ -619,7 +602,6 @@ export default function FinancialsScreen() {
 
       {renderDetail()}
       {renderProfitSettings()}
-
     </View>
   );
 }
@@ -705,13 +687,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   // Cards
   card: {
     flexDirection: 'row',
+    backgroundColor: colors.white,
     marginTop: 8,
     borderRadius: 10,
     padding: 12,
     borderWidth: 1,
-    borderColor: withOpacity(lightColors.primary.light, 0.5),
+    borderColor: colors.border,
     alignItems: 'center',
-    overflow: 'hidden',
   },
   cardLeft: { width: 48, alignItems: 'center', gap: 4 },
   cardDate: { fontSize: 12, fontWeight: '600', color: colors.text.secondary, fontFamily: 'WorkSans-SemiBold' },

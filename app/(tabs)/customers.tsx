@@ -14,14 +14,13 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { lightColors, withOpacity } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Customer } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import * as Contacts from 'expo-contacts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import MetallicButton from '@/components/MetallicButton';
 
 const Location = Platform.OS !== 'web' ? require('expo-location') : null;
 
@@ -518,7 +517,7 @@ export default function CustomersScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
+        colors={[themeColors.primary.light, themeColors.primary.main]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 16 }]}>
@@ -575,11 +574,7 @@ export default function CustomersScreen() {
             data={filtered}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <LinearGradient
-                colors={[themeColors.surface, withOpacity(themeColors.primary.light, 0.3), themeColors.surface]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.customerCard}>
+              <View style={styles.customerCard}>
                 <View style={styles.customerInfo}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>{getInitials(item.name)}</Text>
@@ -607,7 +602,7 @@ export default function CustomersScreen() {
                     <Ionicons name="trash" size={18} color={themeColors.error} />
                   </TouchableOpacity>
                 </View>
-              </LinearGradient>
+              </View>
             )}
             ListEmptyComponent={
               <Text style={styles.emptyText}>Nenhum cliente encontrado</Text>
@@ -616,12 +611,17 @@ export default function CustomersScreen() {
             showsVerticalScrollIndicator={false}
           />
 
-          <MetallicButton
-            circular
-            icon={<Ionicons name="add" size={28} color={themeColors.white} />}
-            onPress={() => handleOpenModal()}
+          <TouchableOpacity
             style={styles.fab}
-          />
+            onPress={() => handleOpenModal()}>
+            <LinearGradient
+              colors={[themeColors.primary.main, themeColors.primary.dark]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.fabGradient}>
+              <Ionicons name="add" size={28} color={themeColors.white} />
+            </LinearGradient>
+          </TouchableOpacity>
         </>
       ) : (
         <>
@@ -644,12 +644,18 @@ export default function CustomersScreen() {
 
           {/* Botão + Adicionar Cliente */}
           {abaAtiva === 'Visitas do Dia' && (
-            <MetallicButton
-              icon={<Ionicons name="add" size={28} color={themeColors.white} />}
-              label="Adicionar Cliente"
-              onPress={() => setModalVisitas(true)}
+            <TouchableOpacity
               style={styles.fabVisitas}
-            />
+              onPress={() => setModalVisitas(true)}>
+              <LinearGradient
+                colors={[themeColors.primary.main, themeColors.primary.dark]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.fabVisitasGradient}>
+                <Ionicons name="add" size={28} color="#FFFFFF" />
+                <Text style={styles.fabVisitasText}>Adicionar Cliente</Text>
+              </LinearGradient>
+            </TouchableOpacity>
           )}
 
           {/* Rodapé fixo */}
@@ -884,7 +890,6 @@ export default function CustomersScreen() {
           </View>
         </View>
       </Modal>
-
     </View>
   );
 }
@@ -969,10 +974,10 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 12,
     marginVertical: 6,
+    backgroundColor: colors.surface,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: withOpacity(lightColors.primary.light, 0.5),
-    overflow: 'hidden',
+    borderColor: colors.border,
   },
   customerInfo: {
     flexDirection: 'row',

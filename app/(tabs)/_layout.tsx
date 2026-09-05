@@ -1,36 +1,8 @@
 import { Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, withOpacity } from '@/constants/colors';
-import { Platform, View, StyleSheet } from 'react-native';
+import { colors } from '@/constants/colors';
+import { Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-
-function TabIcon({ name, color, size, focused }: { name: string; color: string; size: number; focused: boolean }) {
-  if (focused) {
-    return (
-      <LinearGradient
-        colors={[colors.primary.main, colors.primary.light, colors.primary.dark]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={styles.activePill}>
-        <Ionicons name={name as any} size={size - 2} color={colors.white} />
-      </LinearGradient>
-    );
-  }
-  return <Ionicons name={name as any} size={size} color={color} />;
-}
-
-const styles = StyleSheet.create({
-  activePill: {
-    width: 40,
-    height: 28,
-    borderRadius: 14,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: withOpacity(colors.primary.light, 0.5),
-    overflow: 'hidden',
-  },
-});
 
 export default function TabsLayout() {
   return (
@@ -49,7 +21,7 @@ export default function TabsLayout() {
         },
         tabBarBackground: () => (
           <LinearGradient
-            colors={[colors.white, colors.primary.light, colors.primary.main]}
+            colors={[colors.white, colors.primary.light]}
             start={{ x: 0, y: 0 }}
             end={{ x: 0, y: 1 }}
             style={{ flex: 1 }}
@@ -65,8 +37,8 @@ export default function TabsLayout() {
         name="dashboard"
         options={{
           title: 'Início',
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name="home" color={color} size={size} focused={focused} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="home" size={size} color={color} />
           ),
         }}
       />
@@ -74,8 +46,8 @@ export default function TabsLayout() {
         name="customers"
         options={{
           title: 'Clientes',
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name="people" color={color} size={size} focused={focused} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="people" size={size} color={color} />
           ),
         }}
       />
@@ -83,8 +55,8 @@ export default function TabsLayout() {
         name="orders"
         options={{
           title: 'Pedidos',
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name="list" color={color} size={size} focused={focused} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="list" size={size} color={color} />
           ),
         }}
       />
@@ -92,8 +64,8 @@ export default function TabsLayout() {
         name="agenda"
         options={{
           title: 'Agenda',
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name="calendar" color={color} size={size} focused={focused} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="calendar" size={size} color={color} />
           ),
         }}
       />
@@ -101,8 +73,8 @@ export default function TabsLayout() {
         name="financials"
         options={{
           title: 'Financeiro',
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name="cash" color={color} size={size} focused={focused} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cash" size={size} color={color} />
           ),
         }}
       />
@@ -116,8 +88,8 @@ export default function TabsLayout() {
         name="menu"
         options={{
           title: 'Menu',
-          tabBarIcon: ({ color, size, focused }) => (
-            <TabIcon name="menu" color={color} size={size} focused={focused} />
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="menu" size={size} color={color} />
           ),
         }}
       />

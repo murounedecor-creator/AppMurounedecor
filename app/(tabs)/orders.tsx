@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { lightColors, withOpacity, lightenColor, darkenColor } from '@/constants/colors';
+import { lightColors } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -18,7 +18,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format, parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useOrderFilters } from '@/contexts/OrderFiltersContext';
-import MetallicButton from '@/components/MetallicButton';
 
 type Order = {
   id: string;
@@ -144,11 +143,6 @@ export default function OrdersScreen() {
     }
   };
 
-  const getStatusGradient = (status: string): [string, string, string] => {
-    const base = getStatusColor(status);
-    return [lightenColor(base, 0.25), base, darkenColor(base, 0.2)];
-  };
-
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'pending':
@@ -172,7 +166,7 @@ export default function OrdersScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
+        colors={[themeColors.primary.light, themeColors.primary.main]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 16 }]}>
@@ -215,13 +209,13 @@ export default function OrdersScreen() {
             onPress={() => router.push(`/order/${item.id}`)}>
             <View style={styles.orderHeader}>
               <Text style={styles.orderNumber}>Pedido {item.number}</Text>
-              <LinearGradient
-                colors={getStatusGradient(item.status)}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.statusBadge}>
+              <View
+                style={[
+                  styles.statusBadge,
+                  { backgroundColor: getStatusColor(item.status) },
+                ]}>
                 <Text style={styles.statusText}>{getStatusLabel(item.status)}</Text>
-              </LinearGradient>
+              </View>
             </View>
 
             <Text style={styles.customerName}>{item.customer?.name || 'Cliente removido'}</Text>
@@ -246,13 +240,17 @@ export default function OrdersScreen() {
       />
 
       {/* FAB - Novo Pedido */}
-      <MetallicButton
-        circular
-        icon={<Ionicons name="add" size={28} color={themeColors.white} />}
-        onPress={() => router.push('/new-order')}
+      <TouchableOpacity
         style={styles.fab}
-      />
-
+        onPress={() => router.push('/new-order')}>
+        <LinearGradient
+          colors={[themeColors.primary.main, themeColors.primary.dark]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.fabGradient}>
+          <Ionicons name="add" size={28} color={themeColors.white} />
+        </LinearGradient>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -409,9 +407,6 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 10,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: withOpacity(lightColors.primary.light, 0.5),
-    overflow: 'hidden',
   },
   statusText: {
     fontSize: 11,
