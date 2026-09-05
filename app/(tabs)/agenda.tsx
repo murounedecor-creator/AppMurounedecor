@@ -12,7 +12,7 @@ import {
   Platform,
   Share,
 } from 'react-native';
-import { lightColors } from '@/constants/colors';
+import { lightColors, withOpacity } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Customer, CalendarEvent } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -456,6 +456,14 @@ export default function AgendaScreen() {
               key={t.key}
               style={[styles.tabBtn, abaCalendario === t.key && styles.tabBtnActive]}
               onPress={() => setAbaCalendario(t.key)}>
+              {abaCalendario === t.key && (
+                <LinearGradient
+                  colors={[themeColors.primary.main, themeColors.primary.light, themeColors.primary.dark]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.tabBtnActiveGradient}
+                />
+              )}
               <Text style={[styles.tabBtnText, abaCalendario === t.key && styles.tabBtnTextActive]}>
                 {t.label}
               </Text>
@@ -942,12 +950,20 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.surface,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: withOpacity(lightColors.primary.light, 0.3),
     alignItems: 'center',
+    overflow: 'hidden',
   },
   tabBtnActive: {
-    backgroundColor: colors.primary.dark,
-    borderColor: colors.primary.dark,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
+  },
+  tabBtnActiveGradient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    borderRadius: 8,
   },
   tabBtnText: {
     fontSize: 13,

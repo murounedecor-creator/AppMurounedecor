@@ -8,7 +8,7 @@ import {
   TextInput,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { lightColors, withOpacity } from '@/constants/colors';
+import { lightColors, withOpacity, lightenColor, darkenColor } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -144,6 +144,11 @@ export default function OrdersScreen() {
     }
   };
 
+  const getStatusGradient = (status: string): [string, string, string] => {
+    const base = getStatusColor(status);
+    return [lightenColor(base, 0.25), base, darkenColor(base, 0.2)];
+  };
+
   const getStatusLabel = (status: string) => {
     switch (status) {
       case 'pending':
@@ -210,13 +215,13 @@ export default function OrdersScreen() {
             onPress={() => router.push(`/order/${item.id}`)}>
             <View style={styles.orderHeader}>
               <Text style={styles.orderNumber}>Pedido {item.number}</Text>
-              <View
-                style={[
-                  styles.statusBadge,
-                  { backgroundColor: getStatusColor(item.status) },
-                ]}>
+              <LinearGradient
+                colors={getStatusGradient(item.status)}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.statusBadge}>
                 <Text style={styles.statusText}>{getStatusLabel(item.status)}</Text>
-              </View>
+              </LinearGradient>
             </View>
 
             <Text style={styles.customerName}>{item.customer?.name || 'Cliente removido'}</Text>

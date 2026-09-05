@@ -14,7 +14,7 @@ import {
   Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { lightColors } from '@/constants/colors';
+import { lightColors, withOpacity } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Customer } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -575,7 +575,11 @@ export default function CustomersScreen() {
             data={filtered}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <View style={styles.customerCard}>
+              <LinearGradient
+                colors={[themeColors.surface, withOpacity(themeColors.primary.light, 0.3), themeColors.surface]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.customerCard}>
                 <View style={styles.customerInfo}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>{getInitials(item.name)}</Text>
@@ -603,7 +607,7 @@ export default function CustomersScreen() {
                     <Ionicons name="trash" size={18} color={themeColors.error} />
                   </TouchableOpacity>
                 </View>
-              </View>
+              </LinearGradient>
             )}
             ListEmptyComponent={
               <Text style={styles.emptyText}>Nenhum cliente encontrado</Text>
@@ -965,10 +969,10 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 12,
     marginVertical: 6,
-    backgroundColor: colors.surface,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
+    overflow: 'hidden',
   },
   customerInfo: {
     flexDirection: 'row',

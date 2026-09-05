@@ -8,7 +8,7 @@ import {
   Modal,
   Alert,
 } from 'react-native';
-import { lightColors } from '@/constants/colors';
+import { lightColors, withOpacity } from '@/constants/colors';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase, Transaction, Customer } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -251,8 +251,12 @@ export default function FinancialsScreen() {
     return (
       <TouchableOpacity
         key={t.id}
-        style={styles.card}
         onPress={() => { setSelected(t); setDetailVisible(true); }}>
+        <LinearGradient
+          colors={[themeColors.white, withOpacity(themeColors.primary.light, 0.3), themeColors.white]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.card}>
         <View style={styles.cardLeft}>
           <Text style={styles.cardDate}>{format(new Date(t.date), 'dd/MM')}</Text>
           <View style={[styles.statusDot, { backgroundColor: STATUS_COLOR[t.status] || themeColors.text.disabled }]} />
@@ -276,12 +280,18 @@ export default function FinancialsScreen() {
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
           <Ionicons name="trash-outline" size={18} color={themeColors.error} />
         </TouchableOpacity>
+        </LinearGradient>
       </TouchableOpacity>
     );
   };
 
   const renderCashflowCard = (t: Transaction) => (
-    <View key={t.id} style={styles.card}>
+    <LinearGradient
+      key={t.id}
+      colors={[themeColors.white, withOpacity(themeColors.primary.light, 0.3), themeColors.white]}
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.card}>
       <View style={styles.cardLeft}>
         <Text style={styles.cardDate}>{format(new Date(t.date), 'dd/MM')}</Text>
         <Ionicons
@@ -299,7 +309,7 @@ export default function FinancialsScreen() {
       <Text style={[styles.cashflowAmt, { color: t.type === 'revenue' ? themeColors.revenue : themeColors.expense }]}>
         {t.type === 'revenue' ? '+' : '-'}{fmt(Number(t.amount))}
       </Text>
-    </View>
+    </LinearGradient>
   );
 
   // ─── DETAIL MODAL ─────────────────────────────────────────────────────────────
@@ -695,13 +705,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   // Cards
   card: {
     flexDirection: 'row',
-    backgroundColor: colors.white,
     marginTop: 8,
     borderRadius: 10,
     padding: 12,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: withOpacity(lightColors.primary.light, 0.5),
     alignItems: 'center',
+    overflow: 'hidden',
   },
   cardLeft: { width: 48, alignItems: 'center', gap: 4 },
   cardDate: { fontSize: 12, fontWeight: '600', color: colors.text.secondary, fontFamily: 'WorkSans-SemiBold' },
