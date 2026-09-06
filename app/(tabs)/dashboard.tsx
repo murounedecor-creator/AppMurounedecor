@@ -131,7 +131,7 @@ export default function Dashboard() {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.counterCard, styles.cardServices]}
-          onPress={() => router.push('/(tabs)/products')}>
+          onPress={() => router.push('/products')}>
           <Text style={styles.counterLabel}>Produtos</Text>
           <Text style={styles.counterValue}>{products}</Text>
         </TouchableOpacity>

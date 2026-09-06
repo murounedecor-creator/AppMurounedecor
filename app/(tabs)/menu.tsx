@@ -66,7 +66,7 @@ export default function MenuScreen() {
         <MenuRow
           icon="cube-outline"
           label="Produtos"
-          onPress={() => router.push('/(tabs)/products')}
+          onPress={() => router.push('/products')}
         />
         <MenuRow
           icon="construct-outline"
