@@ -269,6 +269,20 @@ export default function AgendaScreen() {
     }
   };
 
+  const renderEntregaCard = (en: { id: string; number: string; prazo_entrega: string; customer: { name: string } | null }) => (
+    <View key={`entrega-${en.id}`} style={styles.eventCard}>
+      <View style={[styles.eventBar, { backgroundColor: themeColors.status.inProgress }]} />
+      <View style={[styles.eventBody, { flexDirection: 'row' }]}>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.eventTitle}>Entrega — Pedido {en.number}</Text>
+          {en.customer?.name ? (
+            <Text style={styles.eventCustomer}>{en.customer.name}</Text>
+          ) : null}
+        </View>
+      </View>
+    </View>
+  );
+
   const eventsOnDate = (date: Date) =>
     events.filter(e => isSameDay(new Date(e.date + 'T00:00:00'), date));
 
@@ -299,6 +313,7 @@ export default function AgendaScreen() {
     .sort((a, b) => a.date.localeCompare(b.date) || (a.time || '').localeCompare(b.time || ''));
 
   const selectedDateEvents = eventsOnDate(selectedDate);
+  const selectedDateEntregas = entregasOnDate(selectedDate);
 
   const getCustomerName = (id: string) =>
     customers.find(c => c.id === id)?.name || '';
@@ -548,10 +563,13 @@ export default function AgendaScreen() {
                     <Text style={styles.addBtnText}>Visitar</Text>
                   </TouchableOpacity>
                 </View>
-                {selectedDateEvents.length === 0 ? (
+                {selectedDateEvents.length === 0 && selectedDateEntregas.length === 0 ? (
                   <Text style={styles.emptyText}>Nenhum evento neste dia</Text>
                 ) : (
-                  selectedDateEvents.map(ev => renderEventCard(ev))
+                  <>
+                    {selectedDateEvents.map(ev => renderEventCard(ev))}
+                    {selectedDateEntregas.map(en => renderEntregaCard(en))}
+                  </>
                 )}
               </View>
             </>

@@ -21,6 +21,8 @@ import { Ionicons } from '@expo/vector-icons';
 import * as Contacts from 'expo-contacts';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useRouter, useLocalSearchParams } from 'expo-router';
+import { shareCustomer } from '@/lib/customers';
 
 const Location = Platform.OS !== 'web' ? require('expo-location') : null;
 
@@ -38,6 +40,8 @@ export default function CustomersScreen() {
   const { themeColors } = useTheme();
   const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const params = useLocalSearchParams<{ editId?: string }>();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [filtered, setFiltered] = useState<Customer[]>([]);
   const [searchText, setSearchText] = useState('');
@@ -67,6 +71,16 @@ export default function CustomersScreen() {
   useEffect(() => {
     loadCustomers();
   }, []);
+
+  useEffect(() => {
+    if (params.editId && customers.length > 0) {
+      const target = customers.find(c => c.id === params.editId);
+      if (target) {
+        handleOpenModal(target);
+        router.setParams({ editId: undefined });
+      }
+    }
+  }, [params.editId, customers]);
 
   useEffect(() => {
     const results = customers.filter(c =>
@@ -574,7 +588,10 @@ export default function CustomersScreen() {
             data={filtered}
             keyExtractor={item => item.id}
             renderItem={({ item }) => (
-              <View style={styles.customerCard}>
+              <TouchableOpacity
+                style={styles.customerCard}
+                activeOpacity={0.7}
+                onPress={() => router.push(`/customer/${item.id}`)}>
                 <View style={styles.customerInfo}>
                   <View style={styles.avatar}>
                     <Text style={styles.avatarText}>{getInitials(item.name)}</Text>
@@ -592,17 +609,12 @@ export default function CustomersScreen() {
                     <Ionicons name="location" size={18} color={themeColors.primary.dark} />
                   </TouchableOpacity>
                   <TouchableOpacity
-                    onPress={() => handleOpenModal(item)}
+                    onPress={() => shareCustomer(item)}
                     style={styles.actionBtn}>
-                    <Ionicons name="pencil" size={18} color={themeColors.primary.dark} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    onPress={() => handleDeleteCustomer(item.id)}
-                    style={styles.actionBtn}>
-                    <Ionicons name="trash" size={18} color={themeColors.error} />
+                    <Ionicons name="share-social" size={18} color={themeColors.primary.dark} />
                   </TouchableOpacity>
                 </View>
-              </View>
+              </TouchableOpacity>
             )}
             ListEmptyComponent={
               <Text style={styles.emptyText}>Nenhum cliente encontrado</Text>
