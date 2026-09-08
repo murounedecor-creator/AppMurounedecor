@@ -195,41 +195,6 @@ export default function CustomersScreen() {
     }
   };
 
-  const handleDeleteCustomer = async (customerId: string) => {
-    Alert.alert('Excluir Cliente', 'Deseja excluir este cliente?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Excluir',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            const { data, error } = await supabase
-              .from('customers')
-              .delete()
-              .eq('id', customerId)
-              .select();
-            if (error) {
-              if (error.code === '23503') {
-                Alert.alert('Não foi possível excluir', 'Este cliente possui pedidos vinculados. Exclua os pedidos dele primeiro.');
-                return;
-              }
-              throw error;
-            }
-            if (!data || data.length === 0) {
-              console.error('Delete de customer não afetou nenhuma linha (RLS ou permissão):', customerId);
-              Alert.alert('Erro', 'Não foi possível excluir: sem permissão para esta ação. Verifique a política de acesso no Supabase.');
-              return;
-            }
-            setCustomers(prev => prev.filter(c => c.id !== customerId));
-          } catch (e: any) {
-            console.error('Erro ao excluir cliente:', e);
-            Alert.alert('Erro', `Não foi possível excluir o cliente: ${e?.message || 'erro desconhecido'}`);
-          }
-        },
-      },
-    ]);
-  };
-
   const handleOpenMap = (address: string, city: string) => {
     if (!address || !city) {
       Alert.alert('Aviso', 'Endereço incompleto');

@@ -1208,7 +1208,7 @@ export default function OrderViewScreen() {
                 <Text style={styles.itemDetail}>
                   Medidas: {f.width_m}m × {f.depth_m}m × {f.height_m}m
                 </Text>
-                <Text style={styles.itemDetail}>Metragem: {Number(f.calculated_meters || 0).toFixed(2)}m²</Text>
+                <Text style={styles.itemDetail}>Metragem: {Number(f.calculated_meters || 0).toFixed(2).replace('.', ',')}m²</Text>
                 {f.observations && (
                   <Text style={styles.itemDetail}>Observação: {f.observations}</Text>
                 )}

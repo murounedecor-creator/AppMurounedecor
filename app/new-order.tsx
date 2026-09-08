@@ -147,7 +147,7 @@ const EXPENSE_CATEGORIES = [
 ];
 
 const formatarMetragem = (valor: number | undefined | null): string => {
-  return Number(valor || 0).toFixed(2);
+  return Number(valor || 0).toFixed(2).replace('.', ',');
 };
 
 export default function NewOrderScreen() {
