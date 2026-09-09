@@ -18,6 +18,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 
 const ImagePicker = Platform.OS !== 'web' ? require('expo-image-picker') : null;
@@ -26,6 +27,7 @@ export default function ProductsScreen() {
   const { themeColors } = useTheme();
   const styles = getStyles(themeColors);
   const insets = useSafeAreaInsets();
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [searchText, setSearchText] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
@@ -193,7 +195,12 @@ export default function ProductsScreen() {
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
         style={[styles.header, { paddingTop: insets.top + 16 }]}>
-        <Text style={styles.title}>Produtos</Text>
+        <View style={styles.headerRow}>
+          <Text style={styles.title}>Produtos</Text>
+          <TouchableOpacity onPress={() => router.push('/import-products')}>
+            <Ionicons name="cloud-upload-outline" size={24} color={themeColors.white} />
+          </TouchableOpacity>
+        </View>
       </LinearGradient>
 
       <View style={styles.searchContainer}>
@@ -407,6 +414,11 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 8,
     elevation: 4,
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   title: {
     fontSize: 28,

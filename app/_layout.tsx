@@ -55,6 +55,7 @@ export default function RootLayout() {
           <Stack.Screen name="index" options={{ headerShown: false }} />
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="products" options={{ headerShown: false }} />
+          <Stack.Screen name="import-products" options={{ headerShown: false }} />
           <Stack.Screen name="new-order" options={{ headerShown: false }} />
           <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="customer/[id]" options={{ headerShown: false }} />
