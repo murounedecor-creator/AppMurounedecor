@@ -56,6 +56,7 @@ export default function RootLayout() {
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="products" options={{ headerShown: false }} />
           <Stack.Screen name="import-products" options={{ headerShown: false }} />
+          <Stack.Screen name="personal-finances" options={{ headerShown: false }} />
           <Stack.Screen name="new-order" options={{ headerShown: false }} />
           <Stack.Screen name="order/[id]" options={{ headerShown: false }} />
           <Stack.Screen name="customer/[id]" options={{ headerShown: false }} />

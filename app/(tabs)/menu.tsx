@@ -74,6 +74,13 @@ export default function MenuScreen() {
           onPress={() => router.push('/services-em-breve')}
         />
 
+        <SectionLabel>Pessoal</SectionLabel>
+        <MenuRow
+          icon="wallet-outline"
+          label="Finanças Pessoais"
+          onPress={() => router.push('/personal-finances')}
+        />
+
         <SectionLabel>Documentos</SectionLabel>
         <MenuRow
           icon="create-outline"
