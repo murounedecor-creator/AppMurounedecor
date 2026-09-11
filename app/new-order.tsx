@@ -452,7 +452,7 @@ export default function NewOrderScreen() {
     setLoading(true);
     try {
       const [customersRes, productsRes] = await Promise.all([
-        supabase.from('customers').select('*'),
+        supabase.from('customers').select('*').order('name', { ascending: true }),
         supabase.from('products').select('*'),
       ]);
 
@@ -3068,7 +3068,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   placeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#5C3D1E',
+    color: colors.text.primary,
     fontFamily: 'WorkSans-SemiBold',
   },
   placeButtonTextActive: {

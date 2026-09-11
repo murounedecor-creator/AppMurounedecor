@@ -909,7 +909,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     borderBottomColor: '#C9A96E',
   },
   tabText: {
-    color: '#5C3D1E',
+    color: colors.text.primary,
     fontSize: 15,
     fontFamily: 'WorkSans-Regular',
   },
@@ -1122,13 +1122,13 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   visitasEmptyTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#5C3D1E',
+    color: colors.text.primary,
     marginTop: 12,
     fontFamily: 'Fraunces-Bold',
   },
   visitasEmptyText: {
     fontSize: 14,
-    color: '#888',
+    color: colors.text.secondary,
     textAlign: 'center',
     maxWidth: '100%',
     fontFamily: 'WorkSans-Regular',
@@ -1166,12 +1166,12 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   },
   visitaNome: {
     fontWeight: 'bold',
-    color: '#5C3D1E',
+    color: colors.text.primary,
     fontSize: 15,
     fontFamily: 'WorkSans-Bold',
   },
   visitaDetalhe: {
-    color: '#888',
+    color: colors.text.secondary,
     fontSize: 12,
     marginTop: 2,
     fontFamily: 'WorkSans-Regular',
