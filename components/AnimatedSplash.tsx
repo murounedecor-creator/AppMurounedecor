@@ -1,4 +1,3 @@
-cat > components/AnimatedSplash.tsx << 'EOF'
 import React, { useEffect, useMemo } from 'react';
 import { View, StyleSheet, Image, Dimensions } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -69,20 +68,15 @@ export default function AnimatedSplash({ onFinish }: Props) {
   const sceneOpacity = useSharedValue(1);
 
   useEffect(() => {
-    // FASE 1 — Revelação da silhueta (0-1s)
     logoOpacity.value = withSequence(
       withTiming(0.15, { duration: T.p1a, easing: EASE }),
       withTiming(0.4, { duration: T.p1b, easing: EASE }),
       withTiming(0.6, { duration: T.p1c, easing: EASE }),
-      // FASE 2 — Varredura de luz (1-2s)
       withTiming(1, { duration: T.p2a, easing: EASE }),
       withTiming(1, { duration: T.p2b }),
       withTiming(1, { duration: T.p2c }),
-      // FASE 3 — Pico (2-3.25s)
       withTiming(1, { duration: T.p3a + T.p3b + T.p3c }),
-      // FASE 4 — micro-movimento (3.25-4s)
       withTiming(1, { duration: T.p4a + T.p4b + T.p4c }),
-      // FASE 5 — decaimento (4-5s)
       withTiming(0.3, { duration: T.p5a, easing: EASE }),
       withTiming(0, { duration: T.p5b, easing: EASE }, finished => {
         if (finished) runOnJS(onFinish)();
@@ -90,12 +84,12 @@ export default function AnimatedSplash({ onFinish }: Props) {
     );
 
     logoScale.value = withSequence(
-      withTiming(1, { duration: T.p1a + T.p1b, easing: EASE }), // 98% -> 100%
+      withTiming(1, { duration: T.p1a + T.p1b, easing: EASE }),
       withTiming(1, { duration: T.p1c }),
-      withTiming(1.02, { duration: T.p2a, easing: EASE }), // swell 102%
+      withTiming(1.02, { duration: T.p2a, easing: EASE }),
       withTiming(1.02, { duration: T.p2b + T.p2c }),
       withTiming(1.02, { duration: T.p3a + T.p3b + T.p3c }),
-      withTiming(1, { duration: T.p4a, easing: EASE }), // settle
+      withTiming(1, { duration: T.p4a, easing: EASE }),
       withTiming(1, { duration: T.p4b + T.p4c + T.p5a + T.p5b })
     );
 
@@ -104,18 +98,17 @@ export default function AnimatedSplash({ onFinish }: Props) {
       withTiming(-5, { duration: T.p4a, easing: EASE })
     );
 
-    // Glow / Bloom
     glowOpacity.value = withSequence(
       withTiming(0, { duration: T.p1a + T.p1b }),
-      withTiming(0.25, { duration: T.p1c, easing: EASE }), // Alpha Rise
-      withTiming(0.45, { duration: T.p2a, easing: EASE }), // Swell
-      withTiming(0.7, { duration: T.p2b, easing: EASE }), // Shimmer Start
+      withTiming(0.25, { duration: T.p1c, easing: EASE }),
+      withTiming(0.45, { duration: T.p2a, easing: EASE }),
+      withTiming(0.7, { duration: T.p2b, easing: EASE }),
       withTiming(0.7, { duration: T.p2c }),
       withTiming(0.75, { duration: T.p3a }),
-      withTiming(1, { duration: T.p3b, easing: EASE }), // Bloom Max
+      withTiming(1, { duration: T.p3b, easing: EASE }),
       withTiming(0.35, { duration: T.p3c, easing: EASE }),
       withTiming(0.3, { duration: T.p4a + T.p4b }),
-      withTiming(0.4, { duration: T.p4c, easing: EASE }), // pulso secundário
+      withTiming(0.4, { duration: T.p4c, easing: EASE }),
       withTiming(0.1, { duration: T.p5a, easing: EASE }),
       withTiming(0, { duration: T.p5b, easing: EASE })
     );
@@ -124,13 +117,12 @@ export default function AnimatedSplash({ onFinish }: Props) {
       withTiming(0.3, { duration: T.p1a + T.p1b + T.p1c }),
       withTiming(0.5, { duration: T.p2a + T.p2b + T.p2c, easing: EASE }),
       withTiming(0.55, { duration: T.p3a }),
-      withTiming(1.4, { duration: T.p3b, easing: EASE }), // Glow Radius 10->85px
+      withTiming(1.4, { duration: T.p3b, easing: EASE }),
       withTiming(0.9, { duration: T.p3c, easing: EASE }),
       withTiming(0.85, { duration: T.p4a + T.p4b + T.p4c }),
       withTiming(0.6, { duration: T.p5a + T.p5b, easing: EASE })
     );
 
-    // Shimmer principal (1.25s-1.75s)
     const shimmer1Delay = T.p1a + T.p1b + T.p1c + T.p2a;
     shimmerOpacity.value = withDelay(
       shimmer1Delay,
@@ -145,7 +137,6 @@ export default function AnimatedSplash({ onFinish }: Props) {
       withTiming(LOGO_CARD_SIZE, { duration: T.p2b, easing: Easing.linear })
     );
 
-    // Pulso de luz secundário, mais sutil (3.5s-3.75s)
     const shimmer2Delay =
       T.p1a + T.p1b + T.p1c + T.p2a + T.p2b + T.p2c + T.p3a + T.p3b + T.p3c + T.p4a;
     shimmer2Opacity.value = withDelay(
@@ -161,7 +152,6 @@ export default function AnimatedSplash({ onFinish }: Props) {
       withTiming(LOGO_CARD_SIZE, { duration: T.p4b, easing: Easing.linear })
     );
 
-    // Tipografia — wordmark
     textOpacity.value = withSequence(
       withTiming(0, { duration: T.p1a + T.p1b }),
       withTiming(0.2, { duration: T.p1c, easing: EASE }),
@@ -183,7 +173,6 @@ export default function AnimatedSplash({ onFinish }: Props) {
       )
     );
 
-    // Partículas de pó dourado (3.25s-4.5s)
     const particlesDelay =
       T.p1a + T.p1b + T.p1c + T.p2a + T.p2b + T.p2c + T.p3a + T.p3b + T.p3c;
     particlesOpacity.value = withDelay(
@@ -195,7 +184,6 @@ export default function AnimatedSplash({ onFinish }: Props) {
       )
     );
 
-    // Corte final garantido para preto absoluto
     sceneOpacity.value = withDelay(TOTAL_MS - 400, withTiming(0, { duration: 400, easing: EASE }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -385,4 +373,3 @@ const styles = StyleSheet.create({
     fontFamily: 'WorkSans-Regular',
   },
 });
-EOF</parameter>
