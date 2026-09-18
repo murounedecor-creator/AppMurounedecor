@@ -6,6 +6,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Modal,
+  TextInput,
   Alert,
 } from 'react-native';
 import { lightColors } from '@/constants/colors';
@@ -27,7 +28,7 @@ import {
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-type SubTab = 'payments' | 'cashflow' | 'profit';
+type SubTab = 'payments' | 'cashflow' | 'profit' | 'expenses';
 type PaymentFilter = 'overdue' | 'pending' | 'received';
 type CashflowFilter = 'all' | 'revenue' | 'expense';
 
@@ -52,6 +53,12 @@ export default function FinancialsScreen() {
   const insets = useSafeAreaInsets();
   const [subTab, setSubTab] = useState<SubTab>('payments');
   const [currentMonth, setCurrentMonth] = useState(new Date());
+  const [generalExpenses, setGeneralExpenses] = useState<
+    Array<{ id: string; description: string; amount: number; expense_date: string }>
+  >([]);
+  const [expenseModalVisible, setExpenseModalVisible] = useState(false);
+  const [expenseForm, setExpenseForm] = useState({ description: '', amount: '' });
+  const [savingExpense, setSavingExpense] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>('overdue');
@@ -138,11 +145,84 @@ export default function FinancialsScreen() {
     setOperationalExpenses(opExpenses);
   }, [currentMonth]);
 
+  const loadGeneralExpenses = useCallback(async () => {
+    try {
+      const monthStart = format(startOfMonth(currentMonth), 'yyyy-MM-dd');
+      const monthEnd = format(endOfMonth(currentMonth), 'yyyy-MM-dd');
+      const { data, error } = await supabase
+        .from('general_expenses')
+        .select('*')
+        .gte('expense_date', monthStart)
+        .lte('expense_date', monthEnd)
+        .order('expense_date', { ascending: false });
+      if (error) throw error;
+      setGeneralExpenses((data || []) as any);
+    } catch (e) {
+      console.error('Erro ao carregar despesas gerais:', e);
+    }
+  }, [currentMonth]);
+
+  useEffect(() => {
+    loadGeneralExpenses();
+  }, [loadGeneralExpenses]);
+
+  const handleSaveExpense = async () => {
+    const amountValue = parseFloat(String(expenseForm.amount || '0').replace(',', '.'));
+    if (!expenseForm.description.trim()) {
+      Alert.alert('Atenção', 'Informe a descrição da despesa.');
+      return;
+    }
+    if (!amountValue || amountValue <= 0) {
+      Alert.alert('Atenção', 'Informe um valor válido.');
+      return;
+    }
+    setSavingExpense(true);
+    try {
+      const { error } = await supabase.from('general_expenses').insert([
+        {
+          description: expenseForm.description.trim(),
+          amount: amountValue,
+          expense_date: format(new Date(), 'yyyy-MM-dd'),
+        },
+      ]);
+      if (error) throw error;
+      setExpenseForm({ description: '', amount: '' });
+      setExpenseModalVisible(false);
+      loadGeneralExpenses();
+    } catch (e: any) {
+      console.error('Erro ao salvar despesa geral:', e);
+      Alert.alert('Erro', `Não foi possível salvar: ${e?.message || 'erro desconhecido'}`);
+    } finally {
+      setSavingExpense(false);
+    }
+  };
+
+  const handleDeleteExpense = (id: string) => {
+    Alert.alert('Excluir despesa', 'Deseja excluir esta despesa?', [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Excluir',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            const { error } = await supabase.from('general_expenses').delete().eq('id', id);
+            if (error) throw error;
+            loadGeneralExpenses();
+          } catch (e) {
+            console.error('Erro ao excluir despesa geral:', e);
+            Alert.alert('Erro', 'Não foi possível excluir.');
+          }
+        },
+      },
+    ]);
+  };
+
   useFocusEffect(
     useCallback(() => {
       loadTransactions();
       loadProfitData();
-    }, [loadTransactions, loadProfitData])
+      loadGeneralExpenses();
+    }, [loadTransactions, loadProfitData, loadGeneralExpenses])
   );
 
   useEffect(() => {
@@ -554,6 +634,90 @@ export default function FinancialsScreen() {
     </ScrollView>
   );
 
+  const totalGeneralExpenses = generalExpenses.reduce((sum, e) => sum + Number(e.amount), 0);
+
+  const renderExpensesTab = () => (
+    <ScrollView style={styles.tabContent} showsVerticalScrollIndicator={false}>
+      <View style={styles.breakdownCard}>
+        <Text style={styles.breakdownTitle}>Despesas Gerais do Negócio</Text>
+        <Text style={styles.expenseHint}>
+          Gastos gerais (aluguel, luz, material de uso geral) — não entram no cálculo de Lucro.
+        </Text>
+        <Text style={[styles.profitValue, { color: themeColors.expense, marginTop: 8 }]}>
+          {fmt(totalGeneralExpenses)}
+        </Text>
+      </View>
+
+      <TouchableOpacity
+        style={styles.settingsBtn}
+        onPress={() => setExpenseModalVisible(true)}>
+        <Ionicons name="add-circle-outline" size={18} color={themeColors.primary.dark} />
+        <Text style={styles.settingsBtnText}>Nova Despesa Geral</Text>
+      </TouchableOpacity>
+
+      {generalExpenses.length === 0 ? (
+        <Text style={styles.emptyText}>Nenhuma despesa geral neste mês</Text>
+      ) : (
+        generalExpenses.map(e => (
+          <TouchableOpacity
+            key={e.id}
+            style={styles.expenseRow}
+            onLongPress={() => handleDeleteExpense(e.id)}>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.breakdownLabel}>{e.description}</Text>
+              <Text style={styles.expenseDate}>
+                {format(new Date(e.expense_date + 'T00:00:00'), 'dd/MM/yyyy')}
+              </Text>
+            </View>
+            <Text style={[styles.breakdownAmt, { color: themeColors.expense }]}>
+              -{fmt(Number(e.amount))}
+            </Text>
+          </TouchableOpacity>
+        ))
+      )}
+      {generalExpenses.length > 0 && (
+        <Text style={styles.expenseDate}>Toque e segure numa despesa para excluir</Text>
+      )}
+
+      <View style={{ height: 60 }} />
+    </ScrollView>
+  );
+
+  const renderExpenseModal = () => (
+    <Modal visible={expenseModalVisible} animationType="slide" transparent>
+      <View style={styles.overlay}>
+        <View style={styles.modalBox}>
+          <View style={styles.modalHead}>
+            <Text style={styles.modalTitle}>Nova Despesa Geral</Text>
+            <TouchableOpacity onPress={() => setExpenseModalVisible(false)}>
+              <Ionicons name="close" size={24} color={themeColors.text.primary} />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.expenseHint}>Descrição</Text>
+          <TextInput
+            style={styles.expenseInput}
+            placeholder="Ex: Aluguel da loja"
+            placeholderTextColor={themeColors.text.secondary}
+            value={expenseForm.description}
+            onChangeText={text => setExpenseForm({ ...expenseForm, description: text })}
+          />
+          <Text style={styles.expenseHint}>Valor (R$)</Text>
+          <TextInput
+            style={styles.expenseInput}
+            placeholder="0,00"
+            placeholderTextColor={themeColors.text.secondary}
+            keyboardType="decimal-pad"
+            value={expenseForm.amount}
+            onChangeText={text => setExpenseForm({ ...expenseForm, amount: text })}
+          />
+          <TouchableOpacity style={styles.saveBtn} onPress={handleSaveExpense} disabled={savingExpense}>
+            <Text style={styles.saveBtnText}>{savingExpense ? 'Salvando...' : 'Salvar'}</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
+  );
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -571,6 +735,7 @@ export default function FinancialsScreen() {
           { key: 'payments' as SubTab, label: 'Pagamentos' },
           { key: 'cashflow' as SubTab, label: 'Fluxo de Caixa' },
           { key: 'profit' as SubTab, label: 'Lucro' },
+          { key: 'expenses' as SubTab, label: 'Despesas Gerais' },
         ] as { key: SubTab; label: string }[]).map(tab => (
           <TouchableOpacity
             key={tab.key}
@@ -599,9 +764,11 @@ export default function FinancialsScreen() {
       {subTab === 'payments' && renderPaymentsTab()}
       {subTab === 'cashflow' && renderCashflowTab()}
       {subTab === 'profit' && renderProfitTab()}
+      {subTab === 'expenses' && renderExpensesTab()}
 
       {renderDetail()}
       {renderProfitSettings()}
+      {renderExpenseModal()}
     </View>
   );
 }
@@ -866,6 +1033,29 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   },
 
   settingsDesc: { fontSize: 13, color: colors.text.secondary, marginBottom: 16, fontFamily: 'WorkSans-Regular' },
+  expenseHint: { fontSize: 12, color: colors.text.secondary, marginTop: 10, marginBottom: 4, fontFamily: 'WorkSans-Regular' },
+  expenseInput: {
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 14,
+    color: colors.text.primary,
+    fontFamily: 'WorkSans-Regular',
+  },
+  expenseRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: 12,
+    marginTop: 10,
+  },
+  expenseDate: { fontSize: 11, color: colors.text.secondary, marginTop: 2, fontFamily: 'WorkSans-Regular' },
   settingsRow: {
     flexDirection: 'row',
     alignItems: 'center',

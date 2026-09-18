@@ -65,8 +65,12 @@ export default function AgendaScreen() {
     quantidadeTotal: number;
     comprado: boolean;
     orderIds: string[];
-    itensPorPedido: Array<{ clienteNome: string; numeroPedido: string; quantidade: number }>;
+    itensPorPedido: Array<{ itemId: string; clienteNome: string; numeroPedido: string; quantidade: number }>;
   }>>([]);
+  const [editComprasVisible, setEditComprasVisible] = useState(false);
+  const [editComprasItem, setEditComprasItem] = useState<typeof compras[0] | null>(null);
+  const [editComprasValores, setEditComprasValores] = useState<Record<string, string>>({});
+  const [savingEditCompras, setSavingEditCompras] = useState(false);
   const [loadingEntregas, setLoadingEntregas] = useState(false);
   const [loadingCompras, setLoadingCompras] = useState(false);
 
@@ -131,7 +135,7 @@ export default function AgendaScreen() {
     try {
       const { data, error } = await supabase
         .from('order_items_products')
-        .select('id, order_id, product_name, quantity, unit, comprado, order:orders!inner(status, number, customer:customers(name))')
+        .select('id, order_id, product_name, quantity, unit, comprado, quantidade_compra_ajustada, order:orders!inner(status, number, customer:customers(name))')
         .eq('order.status', 'in_progress')
         .eq('oculto_compras', false);
       if (error) throw error;
@@ -142,6 +146,7 @@ export default function AgendaScreen() {
         quantity: number;
         unit: string;
         comprado: boolean;
+        quantidade_compra_ajustada: number | null;
         order: { status: string; number: string; customer: { name: string } | null };
       }>;
 
@@ -151,19 +156,21 @@ export default function AgendaScreen() {
         quantidadeTotal: number;
         comprado: boolean;
         orderIds: string[];
-        itensPorPedido: Array<{ clienteNome: string; numeroPedido: string; quantidade: number }>;
+        itensPorPedido: Array<{ itemId: string; clienteNome: string; numeroPedido: string; quantidade: number }>;
       }>();
 
       for (const r of rows) {
+        const quantidadeEfetiva = r.quantidade_compra_ajustada ?? r.quantity;
         const key = `${r.product_name}__${r.unit}`;
         const itemPedido = {
+          itemId: r.id,
           clienteNome: r.order?.customer?.name || 'Sem cliente',
           numeroPedido: r.order?.number || '—',
-          quantidade: r.quantity,
+          quantidade: quantidadeEfetiva,
         };
         const existing = gruposMap.get(key);
         if (existing) {
-          existing.quantidadeTotal += r.quantity;
+          existing.quantidadeTotal += quantidadeEfetiva;
           if (!r.comprado) existing.comprado = false;
           if (!existing.orderIds.includes(r.order_id)) existing.orderIds.push(r.order_id);
           existing.itensPorPedido.push(itemPedido);
@@ -171,7 +178,7 @@ export default function AgendaScreen() {
           gruposMap.set(key, {
             nome: r.product_name,
             unidade: r.unit,
-            quantidadeTotal: r.quantity,
+            quantidadeTotal: quantidadeEfetiva,
             comprado: r.comprado,
             orderIds: [r.order_id],
             itensPorPedido: [itemPedido],
@@ -243,7 +250,42 @@ export default function AgendaScreen() {
     );
   };
 
-  const handleCompartilharCompras = async () => {
+  const abrirEditarCompras = (item: typeof compras[0]) => {
+    const valores: Record<string, string> = {};
+    item.itensPorPedido.forEach(ip => {
+      valores[ip.itemId] = String(ip.quantidade).replace('.', ',');
+    });
+    setEditComprasValores(valores);
+    setEditComprasItem(item);
+    setEditComprasVisible(true);
+  };
+
+  const salvarEdicaoCompras = async () => {
+    if (!editComprasItem) return;
+    setSavingEditCompras(true);
+    try {
+      for (const ip of editComprasItem.itensPorPedido) {
+        const bruto = editComprasValores[ip.itemId] ?? '';
+        const novaQuantidade = parseFloat(bruto.replace(',', '.'));
+        if (isNaN(novaQuantidade) || novaQuantidade < 0) continue;
+        const { error } = await supabase
+          .from('order_items_products')
+          .update({ quantidade_compra_ajustada: novaQuantidade })
+          .eq('id', ip.itemId);
+        if (error) throw error;
+      }
+      setEditComprasVisible(false);
+      setEditComprasItem(null);
+      loadCompras();
+    } catch (e) {
+      console.error('Erro ao salvar edição de compras:', e);
+      Alert.alert('Erro', 'Não foi possível salvar as alterações.');
+    } finally {
+      setSavingEditCompras(false);
+    }
+  };
+
+
     if (Platform.OS === 'web') {
       Alert.alert('Compartilhar', 'Disponível apenas no aplicativo instalado no celular.');
       return;
@@ -636,9 +678,20 @@ export default function AgendaScreen() {
                   <View style={styles.compraInfo}>
                     <Text style={styles.compraNome}>{item.nome}</Text>
                     <Text style={styles.compraQtd}>
-                      {item.quantidadeTotal} {item.unidade}
+                      {String(item.quantidadeTotal).replace('.', ',')} {item.unidade}
+                    </Text>
+                    <Text style={styles.compraClientes}>
+                      {item.itensPorPedido
+                        .map(ip => `${ip.clienteNome} (Pedido ${ip.numeroPedido})`)
+                        .join(' • ')}
                     </Text>
                   </View>
+                  <TouchableOpacity
+                    onPress={() => abrirEditarCompras(item)}
+                    style={{ padding: 4, marginRight: 4 }}
+                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}>
+                    <Ionicons name="pencil-outline" size={18} color={themeColors.primary.dark} />
+                  </TouchableOpacity>
                   <TouchableOpacity
                     onPress={() => removerItemCompras(item)}
                     style={{ padding: 4, marginRight: 8 }}
@@ -657,7 +710,46 @@ export default function AgendaScreen() {
         )}
       </ScrollView>
 
-      {/* Modal: Add/Edit Event */}
+      {/* Modal: Editar quantidade por cliente (Compras) */}
+      <Modal visible={editComprasVisible} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalBox}>
+            <View style={styles.modalHead}>
+              <Text style={styles.modalTitle}>Editar quantidade — {editComprasItem?.nome}</Text>
+              <TouchableOpacity onPress={() => setEditComprasVisible(false)}>
+                <Ionicons name="close" size={24} color={themeColors.text.primary} />
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.compraClientes}>
+              Isso ajusta só a lista de compras — não muda o valor já fechado com o cliente.
+            </Text>
+            <ScrollView style={{ marginTop: 12, maxHeight: 320 }}>
+              {editComprasItem?.itensPorPedido.map(ip => (
+                <View key={ip.itemId} style={{ marginBottom: 14 }}>
+                  <Text style={styles.compraNome}>
+                    {ip.clienteNome} (Pedido {ip.numeroPedido})
+                  </Text>
+                  <TextInput
+                    style={styles.input}
+                    keyboardType="decimal-pad"
+                    value={editComprasValores[ip.itemId] ?? ''}
+                    onChangeText={text =>
+                      setEditComprasValores(prev => ({ ...prev, [ip.itemId]: text }))
+                    }
+                  />
+                </View>
+              ))}
+            </ScrollView>
+            <TouchableOpacity
+              style={styles.saveBtn}
+              onPress={salvarEdicaoCompras}
+              disabled={savingEditCompras}>
+              <Text style={styles.saveBtnText}>{savingEditCompras ? 'Salvando...' : 'Salvar'}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
       <Modal visible={modalVisible} animationType="slide" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalBox}>
@@ -1004,6 +1096,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   compraInfo: { flex: 1 },
   compraNome: { fontSize: 14, fontWeight: '600', color: colors.text.primary, fontFamily: 'WorkSans-SemiBold' },
   compraQtd: { fontSize: 12, color: colors.text.secondary, marginTop: 2, fontFamily: 'WorkSans-Regular' },
+  compraClientes: { fontSize: 11, color: colors.text.secondary, marginTop: 2, fontFamily: 'WorkSans-Regular', fontStyle: 'italic' },
   compraCheckbox: {
     width: 28,
     height: 28,
