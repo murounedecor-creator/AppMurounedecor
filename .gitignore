@@ -34,3 +34,4 @@ yarn-error.*
 # typescript
 *.tsbuildinfo
 keystore_base64.txt
+keystore_base64.txt
