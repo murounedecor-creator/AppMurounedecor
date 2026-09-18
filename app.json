@@ -54,7 +54,9 @@
           "imageWidth": 200
         }
       ],
-      "./plugins/withAndroidReleaseSigning.js"
+      "./plugins/withAndroidReleaseSigning.js",
+      "expo-sharing",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true
