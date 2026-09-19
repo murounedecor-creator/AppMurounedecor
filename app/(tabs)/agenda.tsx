@@ -285,7 +285,7 @@ export default function AgendaScreen() {
     }
   };
 
-
+  const handleCompartilharCompras = async () => {
     if (Platform.OS === 'web') {
       Alert.alert('Compartilhar', 'Disponível apenas no aplicativo instalado no celular.');
       return;
