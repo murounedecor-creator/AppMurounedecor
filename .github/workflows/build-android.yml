@@ -53,9 +53,18 @@ jobs:
       - name: Dar permissão de execução ao gradlew
         run: chmod +x android/gradlew
 
+      - name: Diagnóstico - rodar autolinking manualmente
+        run: |
+          set +e
+          node --no-warnings --eval "require('expo/bin/autolinking')" expo-modules-autolinking mirror-kotlin-inline-modules \
+            --kotlin-files-mirror-directory "$GITHUB_WORKSPACE/node_modules/expo/android/src/main/java/inline/modules" \
+            --inline-modules-list-directory "$GITHUB_WORKSPACE/node_modules/expo/android/build/inline/modules" \
+            --watched-directories-serialized "[]"
+          echo "Código de saída do diagnóstico: $?"
+
       - name: Buildar APK release
         working-directory: android
-        run: ./gradlew assembleRelease --debug
+        run: ./gradlew assembleRelease --stacktrace
 
       - name: Enviar APK como artifact
         uses: actions/upload-artifact@v4
