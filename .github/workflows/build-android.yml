@@ -53,7 +53,8 @@ jobs:
       - name: Dar permissão de execução ao gradlew
         run: chmod +x android/gradlew
 
-      - name: Diagnóstico - rodar autolinking manualmente
+      - name: Diagnóstico - rodar autolinking manualmente (mesma pasta do Gradle)
+        working-directory: android
         run: |
           set +e
           node --no-warnings --eval "require('expo/bin/autolinking')" expo-modules-autolinking mirror-kotlin-inline-modules \
