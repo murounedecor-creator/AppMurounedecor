@@ -45,6 +45,7 @@ jobs:
 
       - name: Configurar assinatura em gradle.properties
         run: |
+          echo "" >> android/gradle.properties
           echo "MYAPP_RELEASE_STORE_FILE=release.keystore" >> android/gradle.properties
           echo "MYAPP_RELEASE_KEY_ALIAS=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/gradle.properties
           echo "MYAPP_RELEASE_STORE_PASSWORD=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/gradle.properties
@@ -52,16 +53,6 @@ jobs:
 
       - name: Dar permissão de execução ao gradlew
         run: chmod +x android/gradlew
-
-      - name: Diagnóstico - rodar autolinking manualmente (mesma pasta do Gradle)
-        working-directory: android
-        run: |
-          set +e
-          node --no-warnings --eval "require('expo/bin/autolinking')" expo-modules-autolinking mirror-kotlin-inline-modules \
-            --kotlin-files-mirror-directory "$GITHUB_WORKSPACE/node_modules/expo/android/src/main/java/inline/modules" \
-            --inline-modules-list-directory "$GITHUB_WORKSPACE/node_modules/expo/android/build/inline/modules" \
-            --watched-directories-serialized "[]"
-          echo "Código de saída do diagnóstico: $?"
 
       - name: Buildar APK release
         working-directory: android
