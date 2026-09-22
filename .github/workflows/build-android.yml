@@ -57,6 +57,8 @@ jobs:
       - name: Buildar APK release
         working-directory: android
         run: ./gradlew assembleRelease --stacktrace
+        env:
+          EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK: '1'
 
       - name: Enviar APK como artifact
         uses: actions/upload-artifact@v4
