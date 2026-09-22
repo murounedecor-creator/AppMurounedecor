@@ -10,7 +10,7 @@ import { ptBR } from 'date-fns/locale';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect } from 'expo-router/react-navigation';
 
 export default function Dashboard() {
   const { themeColors } = useTheme();

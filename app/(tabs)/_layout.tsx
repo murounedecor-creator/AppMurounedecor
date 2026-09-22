@@ -3,8 +3,8 @@ import {
   createMaterialTopTabNavigator,
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationEventMap,
-} from '@react-navigation/material-top-tabs';
-import { ParamListBase, TabNavigationState } from '@react-navigation/native';
+} from 'expo-router/js-top-tabs';
+import { ParamListBase, TabNavigationState } from 'expo-router/react-navigation';
 import { Ionicons } from '@expo/vector-icons';
 import { colors } from '@/constants/colors';
 import { Platform, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
