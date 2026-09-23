@@ -1,6 +1,13 @@
 import { Platform } from 'react-native';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 
-const Notifications = Platform.OS !== 'web' ? require('expo-notifications') : null;
+// Push (remoto) foi removido do Expo Go a partir da SDK 53. O simples
+// require('expo-notifications') já dispara um listener interno de push
+// token que derruba o app inteiro dentro do Expo Go — mesmo só usando
+// notificação local. Build de producao/EAS nao tem essa restricao.
+const isExpoGo = Constants.executionEnvironment === ExecutionEnvironment.StoreClient;
+
+const Notifications = Platform.OS !== 'web' && !isExpoGo ? require('expo-notifications') : null;
 
 if (Notifications) {
   Notifications.setNotificationHandler({
