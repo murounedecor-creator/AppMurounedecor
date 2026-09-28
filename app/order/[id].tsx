@@ -13,7 +13,7 @@ import {
 import { colors } from '@/constants/colors';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '@/lib/supabase';
-import { deleteOrderCascade } from '@/lib/orders';
+import { deleteOrderCascade, duplicateOrder } from '@/lib/orders';
 import { scheduleOrderReminder, cancelOrderReminder } from '@/lib/notifications';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -242,113 +242,9 @@ export default function OrderViewScreen() {
         text: 'Duplicar',
         onPress: async () => {
           try {
-            // Generate new order number
-            const lastOrder = await supabase
-              .from('orders')
-              .select('number')
-              .order('created_at', { ascending: false })
-              .limit(1);
-
-            let nextNumber = '0001';
-            if (lastOrder.data && lastOrder.data.length > 0) {
-              const lastNumber = parseInt(lastOrder.data[0].number.split('-')[0]);
-              nextNumber = (lastNumber + 1).toString().padStart(4, '0');
-            }
-
-            const year = format(new Date(), 'yy');
-            const orderNumber = `${nextNumber}-${year}`;
-
-            // Create new order
-            const { data: newOrder, error: orderError } = await supabase
-              .from('orders')
-              .insert([
-                {
-                  number: orderNumber,
-                  customer_id: order?.customer_id,
-                  status: 'pending',
-                  order_date: format(new Date(), 'yyyy-MM-dd'),
-                  service_subtotal: order?.service_subtotal || 0,
-                  product_subtotal: order?.product_subtotal || 0,
-                  expenses_total: order?.expenses_total || 0,
-                  freight: order?.freight || 0,
-                  discount_type: order?.discount_type,
-                  discount_value: order?.discount_value || 0,
-                  total: order?.total || 0,
-                  payment_method: order?.payment_method,
-                  payment_condition: order?.payment_condition,
-                  observations: order?.observations,
-                },
-              ])
-              .select()
-              .single();
-
-            if (orderError) throw orderError;
-
-            // Duplicate furniture items
-            if (furnitures.length > 0) {
-              await supabase.from('order_items_furniture').insert(
-                furnitures.map(f => ({
-                  order_id: newOrder.id,
-                  furniture_type: f.furniture_type,
-                  quantity_pieces: f.quantity_pieces,
-                  width_m: f.width_m,
-                  depth_m: f.depth_m,
-                  height_m: f.height_m,
-                  calculated_meters: f.calculated_meters,
-                  photo_base64: f.photo_base64,
-                  observations: f.observations,
-                  seat_cushions: f.seat_cushions,
-                  backrest_cushions: f.backrest_cushions,
-                  retractable: f.retractable,
-                  places: f.places,
-                }))
-              );
-            }
-
-            // Duplicate services
-            if (services.length > 0) {
-              await supabase.from('order_items_services').insert(
-                services.map(s => ({
-                  order_id: newOrder.id,
-                  service_name: s.service_name,
-                  value: s.value,
-                }))
-              );
-            }
-
-            // Duplicate products
-            if (products.length > 0) {
-              await supabase.from('order_items_products').insert(
-                products.map(p => ({
-                  order_id: newOrder.id,
-                  product_name: p.product_name,
-                  meters: p.meters,
-                  price_per_meter: p.price_per_meter,
-                  subtotal: p.subtotal,
-                }))
-              );
-            }
-
-            // Duplicate expenses
-            if (expenses.length > 0) {
-              await supabase.from('order_expenses').insert(
-                expenses.map(e => ({
-                  order_id: newOrder.id,
-                  name: e.name,
-                  value: e.value,
-                  category: e.category,
-                  is_paid: e.is_paid,
-                  is_chargeable: true,
-                  expense_date: format(new Date(), 'yyyy-MM-dd'),
-                }))
-              );
-            }
-
+            const { id: newOrderId, number: orderNumber } = await duplicateOrder(String(id));
             Alert.alert('Sucesso', `Pedido ${orderNumber} criado!`, [
-              {
-                text: 'Abrir',
-                onPress: () => router.push(`/order/${newOrder.id}`),
-              },
+              { text: 'Abrir', onPress: () => router.push(`/order/${newOrderId}`) },
               { text: 'OK' },
             ]);
           } catch (error) {

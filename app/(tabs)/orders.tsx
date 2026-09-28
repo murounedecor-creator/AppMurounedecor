@@ -6,6 +6,8 @@ import {
   FlatList,
   TouchableOpacity,
   TextInput,
+  Modal,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { lightColors } from '@/constants/colors';
@@ -18,6 +20,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { format, parseISO, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useOrderFilters } from '@/contexts/OrderFiltersContext';
+import { deleteOrderCascade, duplicateOrder } from '@/lib/orders';
 
 type Order = {
   id: string;
@@ -39,6 +42,8 @@ export default function OrdersScreen() {
   const [filtered, setFiltered] = useState<Order[]>([]);
   const [searchText, setSearchText] = useState('');
   const [loading, setLoading] = useState(false);
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const { periodPreset, getDateRange, selectedStatuses, lastOrdersCount, toggleStatus } =
     useOrderFilters();
 
@@ -82,6 +87,68 @@ export default function OrdersScreen() {
       loadOrders();
     }, [loadOrders])
   );
+
+  const openActions = (targetOrder: Order) => {
+    setSelectedOrder(targetOrder);
+    setActionSheetVisible(true);
+  };
+
+  const closeActions = () => setActionSheetVisible(false);
+
+  const handleEditAction = () => {
+    if (!selectedOrder) return;
+    const targetOrder = selectedOrder;
+    closeActions();
+    router.push(`/new-order?pedidoId=${targetOrder.id}&modo=edicao`);
+  };
+
+  const handleDeleteAction = () => {
+    if (!selectedOrder) return;
+    const targetOrder = selectedOrder;
+    closeActions();
+    Alert.alert(
+      'Excluir',
+      `Deseja excluir o pedido ${targetOrder.number}? Esta ação é irreversível!`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await deleteOrderCascade(targetOrder.id);
+              loadOrders();
+            } catch (error) {
+              console.error('Erro ao excluir pedido:', error);
+              Alert.alert('Erro', 'Falha ao excluir pedido');
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleDuplicateAction = () => {
+    if (!selectedOrder) return;
+    const targetOrder = selectedOrder;
+    closeActions();
+    Alert.alert('Duplicar', `Deseja duplicar o pedido ${targetOrder.number}?`, [
+      { text: 'Cancelar', style: 'cancel' },
+      {
+        text: 'Duplicar',
+        onPress: async () => {
+          try {
+            const { number } = await duplicateOrder(targetOrder.id);
+            Alert.alert('Sucesso', `Pedido ${number} criado!`);
+            loadOrders();
+          } catch (error) {
+            console.error('Erro ao duplicar pedido:', error);
+            Alert.alert('Erro', 'Falha ao duplicar pedido');
+          }
+        },
+      },
+    ]);
+  };
 
   const applyFilters = () => {
     let result = orders;
@@ -206,7 +273,9 @@ export default function OrdersScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.orderCard}
-            onPress={() => router.push(`/order/${item.id}`)}>
+            onPress={() => router.push(`/order/${item.id}`)}
+            onLongPress={() => openActions(item)}
+            delayLongPress={350}>
             <View style={styles.orderHeader}>
               <Text style={styles.orderNumber}>Pedido {item.number}</Text>
               <View
@@ -238,6 +307,44 @@ export default function OrdersScreen() {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
       />
+
+      {/* Ações do pedido (segurar para abrir) */}
+      <Modal
+        visible={actionSheetVisible}
+        transparent
+        animationType="slide"
+        onRequestClose={closeActions}>
+        <TouchableOpacity style={styles.actionOverlay} activeOpacity={1} onPress={closeActions}>
+          <TouchableOpacity activeOpacity={1} style={styles.actionSheet} onPress={() => {}}>
+            <View style={styles.actionSheetHandle} />
+            {selectedOrder && (
+              <Text style={styles.actionSheetTitle}>Pedido {selectedOrder.number}</Text>
+            )}
+            <View style={styles.actionRow}>
+              <TouchableOpacity style={styles.actionButton} onPress={handleEditAction}>
+                <View style={[styles.actionIconCircle, { backgroundColor: themeColors.primary.main }]}>
+                  <Ionicons name="pencil" size={22} color={themeColors.white} />
+                </View>
+                <Text style={styles.actionLabel}>Editar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.actionButton} onPress={handleDuplicateAction}>
+                <View style={[styles.actionIconCircle, { backgroundColor: themeColors.primary.dark }]}>
+                  <Ionicons name="copy" size={22} color={themeColors.white} />
+                </View>
+                <Text style={styles.actionLabel}>Duplicar</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.actionButton} onPress={handleDeleteAction}>
+                <View style={[styles.actionIconCircle, { backgroundColor: themeColors.error }]}>
+                  <Ionicons name="trash" size={22} color={themeColors.white} />
+                </View>
+                <Text style={styles.actionLabel}>Excluir</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+        </TouchableOpacity>
+      </Modal>
 
       {/* FAB - Novo Pedido */}
       <TouchableOpacity
@@ -465,5 +572,60 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  actionOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.45)',
+    justifyContent: 'flex-end',
+  },
+  actionSheet: {
+    backgroundColor: colors.background,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    paddingTop: 12,
+    paddingBottom: 32,
+    paddingHorizontal: 24,
+  },
+  actionSheetHandle: {
+    alignSelf: 'center',
+    width: 40,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: colors.border,
+    marginBottom: 12,
+  },
+  actionSheetTitle: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: colors.text.primary,
+    textAlign: 'center',
+    marginBottom: 20,
+    fontFamily: 'Fraunces-Bold',
+  },
+  actionRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  actionButton: {
+    alignItems: 'center',
+    gap: 8,
+  },
+  actionIconCircle: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    justifyContent: 'center',
+    alignItems: 'center',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  actionLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: colors.text.primary,
+    fontFamily: 'WorkSans-SemiBold',
   },
 });
