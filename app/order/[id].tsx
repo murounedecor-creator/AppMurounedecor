@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -17,6 +17,7 @@ import { deleteOrderCascade, duplicateOrder } from '@/lib/orders';
 import { scheduleOrderReminder, cancelOrderReminder } from '@/lib/notifications';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { format, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -122,12 +123,32 @@ export default function OrderViewScreen() {
     .reduce((sum, e) => sum + Number(e.value || 0), 0);
   const [statusModal, setStatusModal] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
+  const [hasReceipts, setHasReceipts] = useState(false);
 
   useEffect(() => {
     if (id) {
       loadOrderData();
     }
   }, [id]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (!id) return;
+      supabase
+        .from('transactions')
+        .select('id')
+        .eq('order_id', String(id))
+        .eq('category', 'order_revenue')
+        .limit(1)
+        .then(({ data, error }) => {
+          if (error) {
+            console.error('Erro ao verificar recebimentos do pedido:', error);
+            return;
+          }
+          setHasReceipts(!!data && data.length > 0);
+        });
+    }, [id])
+  );
 
   const loadOrderData = async () => {
     setLoading(true);
@@ -1259,7 +1280,9 @@ export default function OrderViewScreen() {
             style={styles.buttonPayments}
             onPress={() => router.push(`/generate-receipts/${order.id}`)}>
             <Ionicons name="cash" size={20} color={colors.white} />
-            <Text style={styles.buttonPaymentsText}>Gerar Recebimentos</Text>
+            <Text style={styles.buttonPaymentsText}>
+              {hasReceipts ? 'Editar Recebimento' : 'Gerar Recebimentos'}
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

@@ -60,6 +60,7 @@ export default function FinancialsScreen() {
   const [expenseForm, setExpenseForm] = useState({ description: '', amount: '' });
   const [savingExpense, setSavingExpense] = useState(false);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [overdueAll, setOverdueAll] = useState<Transaction[]>([]);
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [paymentFilter, setPaymentFilter] = useState<PaymentFilter>('overdue');
   const [cashflowFilter, setCashflowFilter] = useState<CashflowFilter>('all');
@@ -90,6 +91,18 @@ export default function FinancialsScreen() {
       .or(`and(date.gte.${monthStart},date.lte.${monthEnd}),and(due_date.gte.${monthStart},due_date.lte.${monthEnd})`)
       .order('date', { ascending: false });
     if (data) setTransactions(data as Transaction[]);
+
+    // Atrasados: de qualquer mês, enquanto não forem recebidos
+    const todayStr = format(new Date(), 'yyyy-MM-dd');
+    const { data: overdueData } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('type', 'revenue')
+      .not('status', 'in', '(completed,cancelled)')
+      .not('due_date', 'is', null)
+      .lte('due_date', todayStr)
+      .order('due_date', { ascending: true });
+    if (overdueData) setOverdueAll(overdueData as Transaction[]);
   }, [currentMonth]);
 
   const loadProfitData = useCallback(async () => {
@@ -245,10 +258,7 @@ export default function FinancialsScreen() {
 
   // ─── PAYMENTS ───────────────────────────────────────────────────────────────
   const revenues = transactions.filter(t => t.type === 'revenue');
-  const overdue = revenues.filter(
-    t => t.status !== 'completed' && t.status !== 'cancelled' &&
-      t.due_date && isBefore(parseISO(t.due_date), today)
-  );
+  const overdue = overdueAll;
   const toReceive = revenues.filter(
     t => t.status !== 'completed' && t.status !== 'cancelled' &&
       (!t.due_date || !isBefore(parseISO(t.due_date), today))

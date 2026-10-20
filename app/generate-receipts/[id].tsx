@@ -30,6 +30,8 @@ interface Order {
 }
 
 interface PaymentSchedule {
+  id?: string;
+  status?: string;
   date: string;
   value: number;
   description: string;
@@ -50,6 +52,7 @@ export default function GenerateReceiptsScreen() {
   const [paymentSchedules, setPaymentSchedules] = useState<PaymentSchedule[]>([]);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [editingScheduleIndex, setEditingScheduleIndex] = useState<number>(-1);
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -68,7 +71,33 @@ export default function GenerateReceiptsScreen() {
 
       if (error) throw error;
       setOrder(data as Order);
-      calculatePaymentSchedule('à_vista', false);
+
+      const { data: existing, error: existingError } = await supabase
+        .from('transactions')
+        .select('id, description, amount, due_date, status')
+        .eq('order_id', String(id))
+        .eq('category', 'order_revenue')
+        .order('due_date', { ascending: true });
+      if (existingError) throw existingError;
+
+      if (existing && existing.length > 0) {
+        const prefix = `${(data as Order).number} - `;
+        setEditMode(true);
+        setSchedulePayments(true);
+        setPaymentSchedules(
+          existing.map(t => ({
+            id: t.id,
+            status: t.status,
+            date: t.due_date,
+            value: Number(t.amount),
+            description: String(t.description).startsWith(prefix)
+              ? String(t.description).slice(prefix.length)
+              : String(t.description),
+          }))
+        );
+      } else {
+        calculatePaymentSchedule('à_vista', false);
+      }
     } catch (error) {
       console.error('Error loading order:', error);
       Alert.alert('Erro', 'Falha ao carregar pedido');
@@ -190,8 +219,39 @@ export default function GenerateReceiptsScreen() {
   };
 
   const openDatePicker = (index: number) => {
+    if (paymentSchedules[index]?.status === 'completed') {
+      Alert.alert('Aviso', 'Este pagamento já foi recebido e não pode ter a data alterada.');
+      return;
+    }
     setEditingScheduleIndex(index);
     setShowDatePicker(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!order) return;
+    setSaving(true);
+    try {
+      for (const s of paymentSchedules) {
+        if (!s.id || s.status === 'completed') continue;
+        const { data, error } = await supabase
+          .from('transactions')
+          .update({ date: s.date, due_date: s.date })
+          .eq('id', s.id)
+          .select('id');
+        if (error) throw error;
+        if (!data || data.length === 0) {
+          throw new Error('Nenhuma linha foi atualizada — verifique RLS ou se o lançamento foi removido.');
+        }
+      }
+      Alert.alert('Sucesso', 'Recebimento atualizado', [
+        { text: 'OK', onPress: () => router.back() },
+      ]);
+    } catch (error: any) {
+      console.error('Error editing receipts:', error);
+      Alert.alert('Erro', `Falha ao salvar: ${error?.message || 'erro desconhecido'}`);
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleSchedulePayments = async () => {
@@ -281,7 +341,7 @@ export default function GenerateReceiptsScreen() {
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons name="chevron-back" size={24} color={colors.white} />
           </TouchableOpacity>
-          <Text style={styles.title}>Gerar Recebimentos</Text>
+          <Text style={styles.title}>{editMode ? 'Editar Recebimento' : 'Gerar Recebimentos'}</Text>
           <View />
         </LinearGradient>
 
@@ -306,6 +366,8 @@ export default function GenerateReceiptsScreen() {
           </View>
         </View>
 
+        {!editMode && (
+          <>
         {/* Entrance Toggle */}
         <View style={styles.section}>
           <View style={styles.toggleRow}>
@@ -397,6 +459,9 @@ export default function GenerateReceiptsScreen() {
           </View>
         </View>
 
+          </>
+        )}
+
         {/* Payment Schedule */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Cronograma de Pagamentos</Text>
@@ -406,7 +471,7 @@ export default function GenerateReceiptsScreen() {
                 <TouchableOpacity onPress={() => openDatePicker(index)}>
                   <View style={styles.scheduleDateContainer}>
                     <Text style={styles.scheduleDate}>
-                      {format(new Date(schedule.date), 'dd/MM/yyyy', { locale: ptBR })}
+                      {format(parseISO(schedule.date), 'dd/MM/yyyy', { locale: ptBR })}
                     </Text>
                     <Ionicons name="calendar" size={16} color={colors.primary.dark} style={{ marginLeft: 6 }} />
                   </View>
@@ -424,7 +489,6 @@ export default function GenerateReceiptsScreen() {
               mode="date"
               display={Platform.OS === 'ios' ? 'spinner' : 'default'}
               onChange={handleScheduleDateChange}
-              minimumDate={new Date()}
             />
           )}
         </View>
@@ -450,11 +514,11 @@ export default function GenerateReceiptsScreen() {
           {schedulePayments && (
             <TouchableOpacity
               style={[styles.button, styles.buttonSchedule, saving && styles.buttonDisabled]}
-              onPress={handleSchedulePayments}
+              onPress={editMode ? handleSaveEdit : handleSchedulePayments}
               disabled={saving}>
               <Ionicons name="checkmark" size={20} color={colors.white} />
               <Text style={styles.buttonText}>
-                {saving ? 'Agendando...' : 'Agendar'}
+                {saving ? 'Salvando...' : editMode ? 'Salvar' : 'Agendar'}
               </Text>
             </TouchableOpacity>
           )}
