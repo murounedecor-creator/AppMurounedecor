@@ -321,9 +321,9 @@ export default function NewOrderScreen() {
           setLembreteDiasAntes(orderData.lembrete_dias_antes?.toString() || '1');
 
           const [furnRes, servRes, prodRes, expRes] = await Promise.all([
-            supabase.from('order_items_furniture').select('*').eq('order_id', params.pedidoId),
-            supabase.from('order_items_services').select('*').eq('order_id', params.pedidoId),
-            supabase.from('order_items_products').select('*').eq('order_id', params.pedidoId),
+            supabase.from('order_items_furniture').select('*').eq('order_id', params.pedidoId).order('ordem', { ascending: true }).order('created_at', { ascending: true }),
+            supabase.from('order_items_services').select('*').eq('order_id', params.pedidoId).order('ordem', { ascending: true }).order('created_at', { ascending: true }),
+            supabase.from('order_items_products').select('*').eq('order_id', params.pedidoId).order('ordem', { ascending: true }).order('created_at', { ascending: true }),
             supabase.from('order_expenses').select('*').eq('order_id', params.pedidoId),
           ]);
 
@@ -452,7 +452,7 @@ export default function NewOrderScreen() {
     setLoading(true);
     try {
       const [customersRes, productsRes] = await Promise.all([
-        supabase.from('customers').select('*'),
+        supabase.from('customers').select('*').order('name', { ascending: true }),
         supabase.from('products').select('*'),
       ]);
 
@@ -764,6 +764,16 @@ export default function NewOrderScreen() {
     setOrderProducts(prev => prev.filter(p => p.id !== id));
   };
 
+  const moverProduto = (index: number, direcao: -1 | 1) => {
+    setOrderProducts(prev => {
+      const destino = index + direcao;
+      if (destino < 0 || destino >= prev.length) return prev;
+      const nova = [...prev];
+      [nova[index], nova[destino]] = [nova[destino], nova[index]];
+      return nova;
+    });
+  };
+
   const handleEditService = (service: OrderService) => {
     setEditingServiceId(service.id);
     setSelectedServiceCategory(null);
@@ -937,7 +947,7 @@ export default function NewOrderScreen() {
         orderId = orderData.id;
       }
 
-      for (const furniture of furnitures) {
+      for (const [index, furniture] of furnitures.entries()) {
         const { error: furnitureError } = await supabase.from('order_items_furniture').insert([
           {
             order_id: orderId,
@@ -954,6 +964,7 @@ export default function NewOrderScreen() {
             backrest_cushions: furniture.backrestCushions,
             decorative: furniture.decorative,
             observations: furniture.observations,
+            ordem: index,
           },
         ]);
         if (furnitureError) {
@@ -962,7 +973,7 @@ export default function NewOrderScreen() {
         }
       }
 
-      for (const service of services) {
+      for (const [index, service] of services.entries()) {
         const { error: serviceError } = await supabase.from('order_items_services').insert([
           {
             order_id: orderId,
@@ -971,6 +982,7 @@ export default function NewOrderScreen() {
             is_chargeable: service.isChargeable,
             quantity: parseQuantidade(service.quantity),
             unit: service.unit || 'Unitário',
+            ordem: index,
           },
         ]);
         if (serviceError) {
@@ -979,7 +991,7 @@ export default function NewOrderScreen() {
         }
       }
 
-      for (const product of orderProducts) {
+      for (const [index, product] of orderProducts.entries()) {
         const { error: productError } = await supabase.from('order_items_products').insert([
           {
             order_id: orderId,
@@ -991,6 +1003,7 @@ export default function NewOrderScreen() {
             subtotal: product.subtotal,
             quantity: parseQuantidade(product.quantity),
             unit: product.unit || 'Unitário',
+            ordem: index,
           },
         ]);
         if (productError) {
@@ -1502,7 +1515,7 @@ export default function NewOrderScreen() {
             </TouchableOpacity>
           </View>
 
-          {orderProducts.map(product => (
+          {orderProducts.map((product, index) => (
             <View key={product.id} style={styles.itemCard}>
               <View style={styles.itemCardHeader}>
                 <View style={{ flex: 1, marginRight: 8 }}>
@@ -1512,6 +1525,16 @@ export default function NewOrderScreen() {
                   </Text>
                 </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, flexShrink: 0 }}>
+                  <View style={{ gap: 2 }}>
+                    <TouchableOpacity onPress={() => moverProduto(index, -1)} disabled={index === 0} hitSlop={8}>
+                      <Ionicons name="chevron-up" size={18}
+                        color={index === 0 ? themeColors.text.disabled : themeColors.primary.dark} />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={() => moverProduto(index, 1)} disabled={index === orderProducts.length - 1} hitSlop={8}>
+                      <Ionicons name="chevron-down" size={18}
+                        color={index === orderProducts.length - 1 ? themeColors.text.disabled : themeColors.primary.dark} />
+                    </TouchableOpacity>
+                  </View>
                   <TouchableOpacity onPress={() => handleEditProduct(product)} style={{ padding: 4 }}>
                     <Ionicons name="pencil-outline" size={18} color="#C9A96E" />
                   </TouchableOpacity>
@@ -3068,7 +3091,7 @@ const getStyles = (colors: typeof lightColors) => StyleSheet.create({
   placeButtonText: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#5C3D1E',
+    color: colors.text.primary,
     fontFamily: 'WorkSans-SemiBold',
   },
   placeButtonTextActive: {
