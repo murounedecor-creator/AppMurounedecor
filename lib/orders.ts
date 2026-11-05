@@ -82,7 +82,7 @@ export async function duplicateOrder(orderId: string): Promise<{ id: string; num
   const furnitures = furnRes.data || [];
   if (furnitures.length > 0) {
     const { error } = await supabase.from('order_items_furniture').insert(
-      furnitures.map(f => ({
+      furnitures.map((f, index) => ({
         order_id: newOrder.id,
         furniture_type: f.furniture_type,
         quantity_pieces: f.quantity_pieces,
@@ -96,6 +96,7 @@ export async function duplicateOrder(orderId: string): Promise<{ id: string; num
         backrest_cushions: f.backrest_cushions,
         retractable: f.retractable,
         places: f.places,
+        ordem: index,
       }))
     );
     if (error) throw new Error('Falha ao duplicar móveis: ' + error.message);
@@ -104,13 +105,14 @@ export async function duplicateOrder(orderId: string): Promise<{ id: string; num
   const services = servRes.data || [];
   if (services.length > 0) {
     const { error } = await supabase.from('order_items_services').insert(
-      services.map(s => ({
+      services.map((s, index) => ({
         order_id: newOrder.id,
         service_name: s.service_name,
         value: s.value,
         is_chargeable: s.is_chargeable,
         quantity: s.quantity,
         unit: s.unit,
+        ordem: index,
       }))
     );
     if (error) throw new Error('Falha ao duplicar serviços: ' + error.message);
@@ -119,7 +121,7 @@ export async function duplicateOrder(orderId: string): Promise<{ id: string; num
   const products = prodRes.data || [];
   if (products.length > 0) {
     const { error } = await supabase.from('order_items_products').insert(
-      products.map(p => ({
+      products.map((p, index) => ({
         order_id: newOrder.id,
         product_id: p.product_id,
         product_name: p.product_name,
@@ -129,6 +131,7 @@ export async function duplicateOrder(orderId: string): Promise<{ id: string; num
         subtotal: p.subtotal,
         quantity: p.quantity,
         unit: p.unit,
+        ordem: index,
       }))
     );
     if (error) throw new Error('Falha ao duplicar produtos: ' + error.message);
